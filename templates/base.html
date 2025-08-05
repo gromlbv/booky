@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %} Booky {% endblock title %}</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="https://lbvo.ru/utils/init.js"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#000000">
+</head>
+
+<body>
+    <div id="context-menu">
+        <button class="menu-item first-child play">
+            <div class="img-wr">
+                <img src="{{ url_for('static', filename='icons/play-context.svg') }}">
+            </div>
+            <span class="main">Играть</span>
+        </button>
+        <button class="menu-item first-child download">
+            <div class="img-wr">
+                <img src="{{ url_for('static', filename='icons/download-context.svg') }}">
+            </div>
+            <span class="main">Скачать игру</span>
+        </button>
+        <button class="menu-item share">
+            <div class="img-wr">
+                <img src="{{ url_for('static', filename='icons/share-context.svg') }}">
+            </div>
+            <span class="main">Копировать ссылку</span>
+        </button>
+
+        <div class="divider"></div>
+
+        <button class="menu-item share">
+            <div class="img-wr">
+                <img src="{{ url_for('static', filename='icons/collection-context.svg') }}">
+            </div>
+            <span class="main">Добавить в коллекцию</span>
+        </button>
+
+        <button class="menu-item new-tab">
+            <div class="img-wr"></div>
+            <span class="main">Открыть в новой вкладке</span>
+        </button>
+    </div>
+
+    <script>
+        let $menu = $('#context-menu');
+        let $currentTarget = null;
+
+        function showContextMenu(x, y) {
+            const $menu = $('#context-menu');
+
+            $menu.css({
+                left: x,
+                top: y,
+                opacity: 1,
+                pointerEvents: 'auto',
+                position: 'fixed'
+            });
+        }
+
+        function hideContextMenu() {
+            $menu.css({ opacity: 0, pointerEvents: 'none' });
+        }
+        function bindContextHandlers() {
+            $(document).on('contextmenu', function (e) {
+                const $target = $(e.target).closest('.custom-context');
+                if ($target.length) {
+                    e.preventDefault();
+                    $currentTarget = $target;
+                    updateContextMenu($target);
+
+                    showContextMenu(e.clientX, e.clientY);
+
+                } else {
+                    hideContextMenu();
+                }
+            });
+
+            $("body").on('scroll', function () {
+                hideContextMenu();
+            });
+
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('#context-menu').length) hideContextMenu();
+            });
+
+            $menu.on('click', '.play', function () {
+                if (!$currentTarget) return;
+                const url = $currentTarget.data('play-url');
+                if (url) window.location.href = url;
+            });
+
+            $menu.on('click', '.download', function () {
+                if (!$currentTarget) return;
+                const url = $currentTarget.data('download-url');
+                if (url) window.location.href = url;
+            });
+
+            $menu.on('click', '.share', function () {
+                if (!$currentTarget) return;
+                const link = $currentTarget.data('share-link');
+                if (link) {
+                    navigator.clipboard.writeText(link).then(() => {
+                        alert('Ссылка скопирована');
+                    });
+                }
+            });
+
+            $menu.on('click', '.new-tab', function () {
+                if (!$currentTarget) return;
+                const url = $currentTarget.data('open-url');
+                if (url) window.open(url, '_blank');
+            });
+        }
+
+        function updateContextMenu($target) {
+            const hasPlay = $target.data('has-play') === 1 || $target.data('has-play') === '1';
+            $('.menu-item.play').toggle(hasPlay);
+            $('.menu-item.download').toggle(!hasPlay);
+        }
+
+        bindContextHandlers();
+    </script>
+
+
+<div id="gameModal" class="overlay modal"
+    style="display:none;"
+    {% if linked_app %}
+        data-linked-app="{{ linked_app.link }}"
+        hx-get="/api/a/{{ linked_app.link }}/modal"
+        hx-trigger="load"
+        hx-target="#gameModal"
+    {% endif %}>
+</div>
+
+<script>
+
+</script>
+
+
+    <div id="nav-bg"></div>
+    <div class="absolute-menu">
+        <a href="/account/login">Войти в аккаунт</a>
+    </div>
+
+    <div class="wrapper">
+        <header class="base flex">
+
+            <a class="no-fill fit logo" href="/">
+                <svg xmlns="http://www.w3.org/2000/svg" width="54" height="29" viewBox="0 0 54 29" fill="none">
+                    <path d="M1 20.5L35.5 5L43 13.5L23 27L7 3L53 24" stroke="white" stroke-width="2" />
+                </svg>
+            </a>
+
+            <!-- В БУДУЩЕМ ПОМЕНЯТЬ ЗАДЕРЖКУ -->
+            <!-- hx-trigger="keyup delay:300ms, search" -->
+
+            <div id="search-btn" class="outline fit search" style="position: relative;">
+                <img src="{{ url_for('static', filename='icons/search.svg') }}">
+                <input type="search" name="q" id="search" placeholder="Поиск" autocomplete="off"
+                    hx-trigger="keyup changed, search" hx-get="/search" hx-target="#results" hx-swap="innerHTML" />
+                <div id="results" class="suggestions-box"
+                    style="position: absolute; z-index: 1000; top: 100%; left: 0; width: 300px;"></div>
+            </div>
+
+
+            <script>
+
+                $(function () {
+                    // было для подсветки хайлайта другим цветом при ховере на нехайлайт
+                    // $('#results').on('mouseenter', '.suggestion-item', function () {
+                    //     $('highlighted').add('highlighted05');
+                    //     $(this).addClass('highlighted05');
+                    // });
+
+                    let selectedIndex = -1;
+
+                    function updateHighlight($items) {
+                        $items.removeClass('highlighted');
+                        if (selectedIndex >= 0) {
+                            $items.eq(selectedIndex).addClass('highlighted');
+                        }
+                    }
+
+                    $('#search').on('keydown', function (e) {
+                        const $items = $('#results .suggestion-item');
+                        if (!$items.length) return;
+
+                        if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            selectedIndex = (selectedIndex + 1) % $items.length;
+                            updateHighlight($items);
+                        } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            selectedIndex = (selectedIndex - 1 + $items.length) % $items.length;
+                            updateHighlight($items);
+                        } else if (e.key === 'Enter') {
+                            if (selectedIndex >= 0) {
+                                e.preventDefault();
+                                const href = $items.eq(selectedIndex).attr('href') || $items.eq(selectedIndex).data('link');
+                                if (href) window.location.href = href;
+                            }
+                        }
+                    });
+
+                    $('#results').on('click', '.suggestion-item', function () {
+                        const href = $(this).attr('href') || $(this).data('link');
+                        if (href) window.location.href = href;
+                    });
+
+                    document.body.addEventListener('htmx:afterSwap', (evt) => {
+                        if (evt.detail.target.id === 'results') {
+                            selectedIndex = 0;
+                            const $items = $('#results .suggestion-item');
+                            if ($items.length) {
+                                $items.removeClass('highlighted');
+                                $items.eq(selectedIndex).addClass('highlighted');
+                            }
+                        }
+                    });
+
+
+                    $('#search-btn').on('click', function () {
+                        $('#search').focus();
+                    });
+                });
+
+
+
+            </script>
+            <div class="right-side">
+                <a class="no-fill circle size48 add-btn" href="/add">
+                    <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="+">
+                </a>
+
+                <button id="show-nav" class="menu-btn outline circle">
+                    <img src="{{ url_for('static', filename='icons/menu.svg') }}" alt="≡">
+                </button>
+
+                <nav id="nav">
+
+                    {% if not session.get('token') %}
+                    <a class="fill orange" href="/add">
+                        <img src="{{ url_for('static', filename='icons/plus-black.svg') }}">
+                        Добавить...
+                    </a>
+                    <a class="fill" href="/account/login">
+                        <img src="{{ url_for('static', filename='icons/person-sketch.svg') }}" alt="Человек">
+                        Войти в аккаунт
+                    </a>
+                    {% else %}
+                    <a class="fill orange" href="/add">
+                        <img src="{{ url_for('static', filename='icons/plus-black.svg') }}">
+                        Добавить...
+                    </a>
+                    <a class="fill" href="/account/me">
+                        <img src="{{ url_for('static', filename='icons/person-sketch.svg') }}" alt="Человек">
+                        Аккаунт
+                    </a>
+                    {% endif %}
+
+                    <a class="fill" href="/graphs">
+                        <img src="{{ url_for('static', filename='icons/graphs-sketch.svg') }}">
+                        Graphs
+                    </a>
+                    <a class="fill" href="/collections">
+                        Коллекции
+                    </a>
+
+                    <div class="divider header"></div>
+
+                    <a class="fill" href="/terms">
+                        <img src="{{ url_for('static', filename='icons/question-sketch.svg') }}">
+                        Оферта и контакты
+                    </a>
+                    <a class="fill" href="https://lbv_dev.t.me">
+                        <img src="{{ url_for('static', filename='icons/bug-sketch.svg') }}">
+                        Сообщить об ошибке
+                    </a>
+
+                    <div class="divider header"></div>
+
+                    <a class="fill alt version" href="https://github.com/gromlbv/appw">
+                        Alpha<span>v0.17</span>
+                    </a>
+                    <a class="fill alt version" href="https://lbvo.ru">
+                        Made by lbv_dev<span>lbvo.ru</span>
+                    </a>
+                </nav>
+            </div>
+
+        </header>
+        <div class="content-wrapper">
+            {% block content %}{% endblock content %}
+        </div>
+
+        {% set messages = get_flashed_messages() %}
+        {% for message in messages %}
+        <div class="flash-message">
+            {{ message|safe }}
+            <!-- <button id="close-flash-message">X</button> -->
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+
+</html>

@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+
+
+<div class="hello-block">
+    <div class="img-wrapper">
+        <img src="{{ url_for('static', filename='hero.svg') }}" alt="appw - это про обмен вашими играми и приложениями">
+    </div>
+    <div class="flex-cl flex-center gap-24">
+        <h1>
+            <span>appw -</span> это про обмен <span>вашими</span><br>играми и приложениями
+        </h1>
+        <p>Наш сервис абсолютно бесплатен, вы можете поддержать нас донатом, а также выставить свое приложение на продажу, комиссия равна 10%</p>
+    </div>
+    {% if not session.get('token') %}
+        <a class="fluffy" href="/account/login">Войти или создать аккаунт</a>
+    {% else %}
+        <a class="fluffy" href="/add">Добавить программу</a>
+    {% endif %}
+</div>
+{% if linked_app %}
+ДОЛЖНА ОТКРЫТЬСЯ ИГРА
+{% endif %}
+<h2>Только на appw</h2>
+<div class="card-wrapper flex gap-8">
+    <div class="card">
+        {% for app in exclusive_apps %}
+            {% include 'partials/_game_card.html' %}
+        {% endfor %}
+    </div>
+</div>
+
+<h2>Недавно обновлено</h2>
+<div class="card-wrapper flex gap-8">
+    <div class="card">
+        {% for app in latest_shares %}
+            {% set show_update_at = true %}
+            {% set show_preview = true %}
+            {% include 'partials/_game_card.html' %}
+        {% endfor %}
+    </div>
+</div>
+
+<h2>Библиотека</h2>
+<div class="card-wrapper flex gap-8">
+    <div class="card selectable" data-category="shares">
+        {% for app in shares %}
+            {% include 'partials/_game_card.html' %}
+        {% endfor %}
+    </div>
+
+    <div class="card selectable" data-category="games">
+        {% for app in games %}
+            {% include 'partials/_game_card.html' %}
+        {% endfor %}
+    </div>
+
+
+    <div class="card selectable" data-category="apps">
+        {% for app in apps %}
+            {% include 'partials/_game_card.html' %}
+        {% endfor %}
+    </div>
+
+    <div class="category-wr">
+        <a href="#" class="shares" data-category="shares">
+            <img src="{{ url_for('static', filename='icons/close.svg') }}" alt="ALL">
+        </a>
+        <a href="#" data-category="games">
+            <img src="{{ url_for('static', filename='icons/joystick.svg') }}" alt="GAMES">
+        </a>
+        <a href="#" data-category="apps">
+            <img src="{{ url_for('static', filename='icons/terminal.svg') }}" alt="APPS">
+        </a>
+    </div>
+</div>
+
+
+
+<!-- <h1>Файлы</h1>
+<div class="card">
+    {% for file in files %}
+    <a href="/file/{{ file.link }}">{{ file.title }}</a>
+    {% endfor %}
+</div> -->
+
+<h2>Пользователи</h2>
+<div class="card-wrapper flex gap-8">
+    <div class="card users">
+        {% for user in users %}
+        <a href="/user/{{ user["username"] }}">{{user["username"]}}</a>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        const $blocks = $('.card.selectable');
+        const $links = $('.category-wr a');
+
+        function showCategory(category) {
+            $blocks.each(function () {
+                const $block = $(this);
+                $block.toggle($block.data('category') === category);
+            });
+
+            $links.removeClass('active');
+            $links.filter(`[data-category="${category}"]`).addClass('active');
+        }
+
+        $links.on('click', function (e) {
+            e.preventDefault();
+            const category = $(this).data('category');
+            showCategory(category);
+        });
+
+        showCategory('shares');
+    });
+    
+</script>
+
+
+
+{% endblock content %}
