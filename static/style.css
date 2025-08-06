@@ -2,6 +2,15 @@
     --accent-color: #5F00FF;
     --accent-05-color: rgba(95, 0, 255, 0.5);
     --contrast-to-accent: #EFEFEF;
+
+    --primary-color: #EFEFEF;
+    --secondary-color: rgba(255, 255, 255, 0.5);
+    --subtle-color: rgba(255, 255, 255, 0.24);
+    --tertiary-color: rgba(255, 255, 255, 0.08);
+
+    --background-1-color: #101010;
+    --background-2-color: #1E1E1E;
+    --background-3-color: #303030;
 }
 
 :root[data-theme="dark"] {
@@ -55,3 +64,16 @@
     gap: 4px;
 }
 
+
+html{
+    background-color: var(--background-1-color);
+}
+body{
+    margin: 0;
+    padding: 0;
+
+    height: 100vh;
+    width: 100vw;
+
+    background-color: var(--background-1-color);
+}

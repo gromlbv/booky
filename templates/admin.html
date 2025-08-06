@@ -1,0 +1,35 @@
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+<h2>Админка: управление базой</h2>
+
+<button 
+    hx-post="/api/init/all"
+    hx-trigger="click"
+    hx-swap="outerHTML"
+    hx-target="#init-status"
+    hx-indicator="#init-progress"
+>
+    🔄 Полная инициализация
+</button>
+
+<span id="init-status">Ожидает действия</span>
+<progress id="init-progress" style="display: none;"></progress>
+
+<hr>
+
+<label for="span-size">Размер слота (минут):</label>
+<input id="span-size" name="span_size" type="number" value="30" min="5" step="5">
+
+<button
+    hx-post="/api/init/spans"
+    hx-include="#span-size"
+    hx-trigger="click"
+    hx-target="#span-status"
+    hx-swap="outerHTML"
+    hx-indicator="#span-progress"
+>
+    🔁 Обновить слоты
+</button>
+
+<span id="span-status">Ожидает действия</span>
+<progress id="span-progress" style="display: none;"></progress>
