@@ -65,6 +65,7 @@
 }
 
 
+
 html{
     background-color: var(--background-1-color);
 }
@@ -76,4 +77,5 @@ body{
     width: 100vw;
 
     background-color: var(--background-1-color);
+    color: var(--primary-color);
 }

@@ -70,7 +70,6 @@ def index():
 
 
 @app.get('/admin')
-@rate_limit()
 def admin():
     return render_template("admin.html")
 
@@ -85,15 +84,17 @@ def init_spans():
     db.init_time_spans(span_size=size)
     return "<span id='span-status'>✅ Обновлено</span>"
 
-from models import *
+from models import DayOfWeek, TimeSpan
 from datetime import datetime
 
 @app.route("/api/available")
 def available_slots():
     date_str = request.args.get("date")  # '2025-08-05'
-    # Найти день недели: понедельник = 0, воскресенье = 6
-    dow = datetime.strptime(date_str, "%Y-%m-%d").weekday()
-
+    if date_str is not None:
+        dow = datetime.strptime(date_str, "%Y-%m-%d").weekday()
+    else:
+        return "<p>Выберите дату</p>"
+    
     day_of_week = DayOfWeek.query.get(dow + 1)
     if not day_of_week or not day_of_week.is_working:
         return "<p>Нет рабочих слотов в этот день</p>"

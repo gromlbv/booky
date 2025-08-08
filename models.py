@@ -21,16 +21,18 @@ def create_tables():
 
 
 
-time_span_size = 30
-
-
 class DayOfWeek(db.Model):
     __tablename__ = 'days_of_week'
     id = db.Column(db.Integer, primary_key=True)
 
+    name = db.Column(db.String, nullable=False)
+    name_short = db.Column(db.String, nullable=False)
+
     is_working = db.Column(db.Boolean, default=True, nullable=False)
 
-    def __init__(self, is_working):
+    def __init__(self, name, name_short, is_working):
+        self.name = name
+        self.name_short = name_short
         self.is_working = is_working
     
     def set_to_working(self):
@@ -40,8 +42,6 @@ class Day(db.Model):
     __tablename__ = 'days'
     id = db.Column(db.Integer, primary_key=True)
 
-    name = db.Column(db.String, nullable=False)
-    name_short = db.Column(db.String, nullable=False)
     is_holiday = db.Column(db.Boolean, default=True, nullable=False)
 
     day_of_week_id = db.Column(db.Integer, db.ForeignKey('days_of_week.id'), nullable=False)
@@ -77,8 +77,13 @@ class TimeSpan(db.Model):
         self.is_working = True
 
 
-class MeetingObject(db.Model):
+class MeetingRequest(db.Model):
+    __tablename__ = 'meeting_requests'
     id = db.Column(db.Integer, primary_key=True)
 
+    name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
+    text_problem = db.Column(db.String)
+
     timespan_id = db.Column(db.Integer, db.ForeignKey('time_spans.id'), nullable=False)
+    time_span = relationship('TimeSpan', backref='meeting_requests')
