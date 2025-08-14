@@ -47,9 +47,7 @@ class Day(db.Model):
     day_of_week_id = db.Column(db.Integer, db.ForeignKey('days_of_week.id'), nullable=False)
     day_of_week = relationship("DayOfWeek", backref="days")
 
-    def __init__(self, name, name_short, is_holiday, day_of_week):
-        self.name = name
-        self.name_short = name_short
+    def __init__(self, is_holiday, day_of_week):
         self.is_holiday = is_holiday
         self.day_of_week = day_of_week
 

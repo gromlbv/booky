@@ -45,9 +45,7 @@
     flex-direction: column;
 }
 
-.gap-24{
-    gap: 24px;
-}
+.gap-24{gap: 24px;}
 .gap-20{
     gap: 20px;
 }

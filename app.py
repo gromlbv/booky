@@ -45,7 +45,7 @@ def rate_limit(timeout=1, max_attempts=5):
             if attempts_int > max_attempts:
                 return json_response({
                     'type': 'warning',
-                    'message': 'Слишком много запросов!'
+                    'message': 'TOO MUCH REQUESTS!'
                 })
 
             r.setex(user_ip, timeout, "blocked")
@@ -76,13 +76,13 @@ def admin():
 @app.post("/api/init/all",)
 def init_all():
     db.init_all()
-    return "<span id='init-status'>✅ Готово</span>"
+    return "<span id='init-status'>DONE</span>"
 
 @app.post("/api/init/spans")
 def init_spans():
     size = int(request.form.get("span_size", 30))
     db.init_time_spans(span_size=size)
-    return "<span id='span-status'>✅ Обновлено</span>"
+    return "<span id='span-status'>DONE</span>"
 
 from models import DayOfWeek, TimeSpan
 from datetime import datetime
@@ -93,16 +93,16 @@ def available_slots():
     if date_str is not None:
         dow = datetime.strptime(date_str, "%Y-%m-%d").weekday()
     else:
-        return "<p>Выберите дату</p>"
+        return "<p>Choose a date</p>"
     
     day_of_week = DayOfWeek.query.get(dow + 1)
     if not day_of_week or not day_of_week.is_working:
-        return "<p>Нет рабочих слотов в этот день</p>"
+        return "<p>No working slots this day</p>"
 
     times = TimeSpan.query.filter_by(day_of_week=day_of_week, is_working=True).all()
 
     if not times:
-        return "<p>Нет доступных слотов</p>"
+        return "<p>No available slots</p>"
 
     html = "<ul>"
     for span in times:

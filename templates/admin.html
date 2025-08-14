@@ -1,25 +1,20 @@
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/admin.css">
 
-<h2>Админка: управление базой</h2>
 
-<button 
-    hx-post="/api/init/all"
-    hx-trigger="click"
-    hx-swap="outerHTML"
-    hx-target="#init-status"
-    hx-indicator="#init-progress"
->
-    Полная инициализация
-</button>
+<h1>Admin panel</h1>
+<a href="https://book.seniwave.com">book.seniwave.com</a>
 
-<span id="init-status">Ожидает действия</span>
+<span id="init-status"></span>
 <progress id="init-progress" style="display: none;"></progress>
 
 <hr>
 
-<label for="span-size">Размер слота (минут):</label>
+<label for="span-size">Slot size (minutes):</label>
 <input id="span-size" name="span_size" type="number" value="30" min="5" step="5">
 
+<label for=""></label>
 <button
     hx-post="/api/init/spans"
     hx-include="#span-size"
@@ -28,8 +23,20 @@
     hx-swap="outerHTML"
     hx-indicator="#span-progress"
 >
-    Обновить слоты
+    UPDATE
 </button>
 
-<span id="span-status">Ожидает действия</span>
+<span id="span-status"></span>
 <progress id="span-progress" style="display: none;"></progress>
+
+<hr>
+
+<button class="danger"
+    hx-post="/api/init/all"
+    hx-trigger="click"
+    hx-swap="outerHTML"
+    hx-target="#init-status"
+    hx-indicator="#init-progress"
+>
+    RESET ALL
+</button>

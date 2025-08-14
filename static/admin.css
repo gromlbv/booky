@@ -1,0 +1,151 @@
+/* Современные минималистичные стили для админки - Темная тема */
+
+/* Базовые настройки */
+* {
+    box-sizing: border-box;
+}
+
+html{
+    display: flex;
+    justify-content: center;
+
+    width: 100vw;
+    height: 100vh;
+    padding: 24px;
+
+    background-color: #0a0a0a;
+    overflow: hidden;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #e0e0e0;
+    background-color: var(--background-1-color);
+
+    display: flex;
+    flex-direction: column;
+
+    line-height: 1.6;
+    margin: 0;
+    padding: 24px;
+    height: fit-content;
+    max-width: 480px;
+    border-radius: 32px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+h2 {
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: #f0f0f0;
+    margin: 0 0 1.5rem 0;
+    letter-spacing: -0.01em;
+}
+
+label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #b0b0b0;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.01em;
+}
+
+input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 2px solid #333333;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    transition: all 0.2s ease;
+    margin-bottom: 1.5rem;
+}
+
+input:focus {
+    outline: none;
+    border-color: #007aff;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+    background-color: #1f1f1f;
+}
+
+input:hover {
+    border-color: #444444;
+    background-color: #1f1f1f;
+}
+
+input::placeholder {
+    color: #666666;
+}
+
+button {
+    background-color: var(--background-2-color);
+    outline: 2px solid var(--background-2-color);
+    color: var(--font-color);
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 32px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.01em;
+}
+
+button:hover {
+    background-color: var(--accent-05-color);
+    outline-color: var(--accent-color);
+    transform: translateY(0px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:focus {
+    outline: 2px solid var(--contrast-to-accent);
+}
+
+button.danger {
+    background-color: #ff6b6b;
+    outline: 2px solid #ff6b6b;
+    color: #ffffff;
+}
+
+button.danger:hover {
+    background-color: #ff6b6b88;
+}
+
+.error {
+    color: #ff6b6b;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.success {
+    color: #51cf66;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+hr{
+    width: 100%;
+    margin-block-start: 24px;
+    margin-block-end: 24px;
+    border: 1px solid var(--tertiary-color);
+}
+
+a{
+    color: var(--primary-color);
+    text-decoration-color: var(--subtle-color);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    text-decoration-style: wavy;
+}
