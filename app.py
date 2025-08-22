@@ -76,20 +76,42 @@ def admin():
 @app.post("/api/init/all",)
 def init_all():
     db.init_all()
-    return "<span id='init-status'>DONE</span>"
+    return "<span class='post-result' id='init-status'>DONE</span>"
+
+from models import DayOfWeek
+from models import db as database
 
 @app.post("/api/init/spans")
 def init_spans():
     size = int(request.form.get("span_size", 30))
-    db.init_time_spans(span_size=size)
-    return "<span id='span-status'>DONE</span>"
+    start = int(request.form.get("start_time", 0))
+    end = int(request.form.get("end_time", 24))
+    break_size = int(request.form.get("break_size", 15))
+    start_minutes = start * 60
+    end_minutes = end * 60
+
+    db.init_time_spans(span_size=size, break_size=break_size)
+    db.set_work_time(start_minutes, end_minutes, size, break_size)
+
+    days = DayOfWeek.query.all()
+    for day in days:
+        if f"{day.id}" in request.form:
+            print(f"init_days: set {day.id} to working")
+            day.set_to_working()
+        else:
+            print(f"init_days: set {day.id} to not working")
+            day.set_to_not_working()
+
+    database.session.commit()
+
+    return "<span class='post-result' id='span-status'>DONE</span>"
 
 from models import DayOfWeek, TimeSpan
 from datetime import datetime
 
 @app.route("/api/available")
 def available_slots():
-    date_str = request.args.get("date")  # '2025-08-05'
+    date_str = request.args.get("date")  # format 2025-08-05
     if date_str is not None:
         dow = datetime.strptime(date_str, "%Y-%m-%d").weekday()
     else:
@@ -99,13 +121,13 @@ def available_slots():
     if not day_of_week or not day_of_week.is_working:
         return "<p>No working slots this day</p>"
 
-    times = TimeSpan.query.filter_by(day_of_week=day_of_week, is_working=True).all()
+    time_spans = db.get_available_time_spans(dow)
 
-    if not times:
+    if not time_spans:
         return "<p>No available slots</p>"
 
     html = "<ul>"
-    for span in times:
+    for span in time_spans:
         start_h = span.start // 60
         start_m = span.start % 60
         end_h = span.end // 60

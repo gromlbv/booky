@@ -53,6 +53,7 @@ label {
     font-size: 0.875rem;
     font-weight: 500;
     color: #b0b0b0;
+    margin-top: 0.5rem;
     margin-bottom: 0.5rem;
     letter-spacing: 0.01em;
 }
@@ -66,7 +67,7 @@ input {
     background-color: #1a1a1a;
     color: #e0e0e0;
     transition: all 0.2s ease;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.2rem;
 }
 
 input:focus {
@@ -91,6 +92,7 @@ button {
     color: var(--font-color);
     border: none;
     padding: 12px 24px;
+    margin-top: 12px;
     font-size: 1rem;
     font-weight: 500;
     border-radius: 32px;
@@ -148,4 +150,34 @@ a{
     text-decoration-thickness: 2px;
     text-underline-offset: 4px;
     text-decoration-style: wavy;
+}
+
+
+
+
+
+
+.flex-cl{
+    display: flex;
+    flex-direction: column;
+}
+.flex-between{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+input[type='checkbox']{
+    width: 12px;
+    height: 12px;
+}
+
+
+.label-margin-0{
+    margin-bottom: 12px;
+    label{
+        margin: 0;
+        padding: 4px;
+        width: 100%;
+    }
 }

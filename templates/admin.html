@@ -6,27 +6,79 @@
 <h1>Admin panel</h1>
 <a href="https://book.seniwave.com">book.seniwave.com</a>
 
-<span id="init-status"></span>
 <progress id="init-progress" style="display: none;"></progress>
 
 <hr>
 
-<label for="span-size">Slot size (minutes):</label>
-<input id="span-size" name="span_size" type="number" value="30" min="5" step="5">
+<div>
+    <h2>Working days</h2>
+    <div class="flex-cl label-margin-0">
+        <div class="flex-between">
+            <label for="1">Monday</label>
+            <input type="checkbox" name="1" id="1">
+        </div>
+        <div class="flex-between">
+            <label for="2">Tuesday</label>
+            <input type="checkbox" name="2" id="2">
+        </div>
+        <div class="flex-between">
+            <label for="3">Wednesday</label>
+            <input type="checkbox" name="3" id="3">
+        </div>
+        <div class="flex-between">
+            <label for="4">Thursday</label>
+            <input type="checkbox" name="4" id="4">
+        </div>
+        <div class="flex-between">
+            <label for="5">Friday</label>
+            <input type="checkbox" name="5" id="5">
+        </div>
+        <div class="flex-between">
+            <label for="6">Saturday</label>
+            <input type="checkbox" name="6" id="6">
+        </div>
+        <div class="flex-between">
+            <label for="7">Sunday</label>
+            <input type="checkbox" name="7" id="7">
+        </div>
+    </div>
+</div>
 
-<label for=""></label>
+<hr>
+
+<div class="flex gap-8">
+    <div class="flex-cl">
+        <label for="span-size">Slot size (minutes):</label>
+        <input id="span-size" name="span_size" type="number" value="30" min="5" step="5">
+    </div>
+    <div class="flex-cl">
+        <label for="">Break time (minutes):</label>
+        <input id="break-size" name="break_size" type="number" value="10" min="0" step="10" disabled>
+    </div>
+</div>
+
+<div class="flex gap-8">
+    <div class="flex-cl">
+        <label for="start-time">Start hour:</label>
+        <input id="start-time" name="start_time" type="number" value="0" min="0" step="1">
+        </div>
+    <div class="flex-cl">
+        <label for="end-time">End hour:</label>
+        <input id="end-time" name="end_time" type="number" value="24" min="1" step="1">
+    </div>
+</div>
 <button
     hx-post="/api/init/spans"
-    hx-include="#span-size"
+    hx-include="#span-size, #start-time, #end-time, #break-size, input[type='checkbox']"
     hx-trigger="click"
     hx-target="#span-status"
     hx-swap="outerHTML"
     hx-indicator="#span-progress"
 >
     UPDATE
+    <span class="post-result" id="span-status"></span>
 </button>
 
-<span id="span-status"></span>
 <progress id="span-progress" style="display: none;"></progress>
 
 <hr>
@@ -39,4 +91,6 @@
     hx-indicator="#init-progress"
 >
     RESET ALL
+    <span class="post-result" id="init-status"></span>
+
 </button>

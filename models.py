@@ -1,3 +1,4 @@
+import random
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
@@ -25,18 +26,16 @@ class DayOfWeek(db.Model):
     __tablename__ = 'days_of_week'
     id = db.Column(db.Integer, primary_key=True)
 
-    name = db.Column(db.String, nullable=False)
-    name_short = db.Column(db.String, nullable=False)
-
     is_working = db.Column(db.Boolean, default=True, nullable=False)
 
-    def __init__(self, name, name_short, is_working):
-        self.name = name
-        self.name_short = name_short
+    def __init__(self, is_working):
         self.is_working = is_working
     
     def set_to_working(self):
         self.is_working = True
+
+    def set_to_not_working(self):
+        self.is_working = False
 
 class Day(db.Model):
     __tablename__ = 'days'
@@ -53,7 +52,9 @@ class Day(db.Model):
 
     def set_to_holiday(self):
         self.is_holiday = True
-    
+     
+    def remove_holiday(self):
+        self.is_holiday = False
 
 class TimeSpan(db.Model):
     __tablename__ = 'time_spans'
@@ -85,3 +86,18 @@ class MeetingRequest(db.Model):
 
     timespan_id = db.Column(db.Integer, db.ForeignKey('time_spans.id'), nullable=False)
     time_span = relationship('TimeSpan', backref='meeting_requests')
+
+    meet_code = db.Column(db.Integer)
+
+    def __init__(self, name, email, text_problem, time_span):
+        self.name = name
+        self.email = email
+        self.text_problem = text_problem
+        self.time_span = time_span
+
+    def set_meet_code(self):
+        self.meet_code = random.randint(0000, 9999)
+
+    def cancel(self):
+        db.session.delete(self)
+        db.session.commit()
