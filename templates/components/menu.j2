@@ -1,0 +1,21 @@
+{% macro menu_view() %}
+<div class="menu flex-cl justify-between">
+	<div class="flex-cl gap-32">
+		<div class="flex-cl">
+			<a class="big toggle-menu" href="https://seniwave.com">Back to Landing</a>
+			<a class="big toggle-menu" href="mailto:info@seniwave.com">Get in touch</a>
+		</div>
+		<div class="flex-cl gap-8">
+			<a class="toggle-menu" href="/support"><span>Need help?</span> — Support</a>
+			<a class="toggle-menu" href="/report"><span>Found a bug?</span> — Report</a>
+		</div>
+	</div>
+	<div class="flex gap-12 align-center">
+		<div class="flex-cl">
+			<h3>SeniWave</h3>
+			<p>Let's find a time to meet!</p>
+		</div>
+		<img class="logo-animated" src="/static/logos/default.svg" alt="Purple logo with blue wave">
+	</div>
+</div>
+{% endmacro %}

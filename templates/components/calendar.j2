@@ -1,0 +1,113 @@
+{% macro calendar_component(year=2025, month=6) %}
+{% set month_names = {
+    1: 'January', 2: 'February', 3: 'March', 4: 'April', 
+    5: 'May', 6: 'June', 7: 'July', 8: 'August', 
+    9: 'September', 10: 'October', 11: 'November', 12: 'December'
+} %}
+
+{% set current_month_name = month_names[month] %}
+{% set prev_month = month - 1 if month > 1 else 12 %}
+{% set prev_year = year if month > 1 else year - 1 %}
+{% set next_month = month + 1 if month < 12 else 1 %}
+{% set next_year = year if month < 12 else year + 1 %}
+
+<div class="head">
+    <h3>{{ current_month_name }} {{ year }}</h3>
+    <div class="arrows">
+        <button 
+            id="calendar-arrow-left"
+            data-year="{{ prev_year }}" 
+            data-month="{{ prev_month }}"
+            data-description="Previous month">
+            <img src="/static/icons/arrow.svg" style="transform: rotate(180deg);">
+        </button>
+        <button 
+            id="calendar-arrow-right"
+            data-description="Next month"
+            data-year="{{ next_year }}" 
+            data-month="{{ next_month }}"
+            data-description="Next month">
+            <img src="/static/icons/arrow.svg">
+        </button>
+    </div>
+</div>
+
+<div class="calendar-grid">
+    <div class="weekdays">
+        <button class="weekday" tabindex="-1" data-description="Monday" disabled>Mo</button>
+        <button class="weekday" tabindex="-1" data-description="Tuesday" disabled>Tu</button>
+        <button class="weekday" tabindex="-1" data-description="Wednesday" disabled>We</button>
+        <button class="weekday" tabindex="-1" data-description="Thursday" disabled>Th</button>
+        <button class="weekday" tabindex="-1" data-description="Friday" disabled>Fr</button>
+        <button class="weekday" tabindex="-1" data-description="Saturday" disabled>Sa</button>
+        <button class="weekday" tabindex="-1" data-description="Sunday" disabled>Su</button>
+    </div>
+    
+    <div class="days" 
+         hx-get="/api/calendar/{{ year }}/{{ month }}" 
+         hx-trigger="load, calendarNav from:body"
+         hx-target="this"
+         hx-swap="innerHTML">
+        <div class="loading">Fetching calendar...</div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    console.log('HTMX available:', typeof htmx !== 'undefined');
+    
+    let currentYear = {{ year }};
+    let currentMonth = {{ month }};
+    const monthNames = {
+        1: 'January', 2: 'February', 3: 'March', 4: 'April', 
+        5: 'May', 6: 'June', 7: 'July', 8: 'August', 
+        9: 'September', 10: 'October', 11: 'November', 12: 'December'
+    };
+    
+    $(document).on('click', '#calendar-arrow-left, #calendar-arrow-right', function() {
+        const isLeft = $(this).attr('id') === 'calendar-arrow-left';
+        
+        if (isLeft) {
+            currentMonth = currentMonth - 1;
+            if (currentMonth < 1) {
+                currentMonth = 12;
+                currentYear--;
+            }
+        } else {
+            currentMonth = currentMonth + 1;
+            if (currentMonth > 12) {
+                currentMonth = 1;
+                currentYear++;
+            }
+        }
+        
+        $(this).closest('.head').find('h3').text(monthNames[currentMonth] + ' ' + currentYear);
+        
+        const daysContainer = $('.days');
+        
+        console.log('Days container found:', daysContainer.length);
+        console.log('Days container element:', daysContainer[0]);
+        
+        if (daysContainer.length > 0) {
+            daysContainer.attr('hx-get', `/api/calendar/${currentYear}/${currentMonth}`);
+            
+            if (typeof htmx !== 'undefined') {
+                htmx.trigger(daysContainer[0], 'calendarNav');
+                console.log('HTMX trigger sent');
+            } else {
+                daysContainer.load(`/api/calendar/${currentYear}/${currentMonth}`);
+                console.log('Fallback load used');
+            }
+        } else {
+            console.error('Days container not found!');
+        }
+    });
+    
+    $(document).on('click', '.day:not(.empty):not([disabled])', function() {
+        $('.day.selected').removeClass('selected');
+        $(this).addClass('selected');
+        console.log('Selected date:', $(this).data('date'));
+    });
+});
+</script>
+{% endmacro %}

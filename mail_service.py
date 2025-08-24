@@ -1,14 +1,13 @@
-env_PASSWORD = "ldno bpvt nbkv jedm"
-
-
 import sys
 from smtplib import SMTP_SSL as SMTP
 from email.mime.text import MIMEText
 
+from env_service import getenv
+
 SMTPserver =   'smtp.gmail.com'
 PORT =         465
 USERNAME =     'seniwave.agency@seniwave.com'
-PASSWORD =     env_PASSWORD
+PASSWORD =     getenv('MAIL_PASSWORD')
 
 SUBJECT =      'Your Meeting Code'
 SENDER =       'noreply@seniwave.com'
@@ -42,6 +41,5 @@ def send_mail(code, destination):
     finally:
         conn.quit()
         print("mail sent")
-
 
 send_code("me@lbvo.ru", 5520)

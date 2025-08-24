@@ -1,10 +1,9 @@
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-<link rel="stylesheet" href="/static/style.css">
-<link rel="stylesheet" href="/static/admin.css">
-
+<link rel="stylesheet" href="/static/styles/main.css">
+<link rel="stylesheet" href="/static/styles/admin.css">
 
 <h1>Admin panel</h1>
-<a href="https://book.seniwave.com">book.seniwave.com</a>
+<a href="/">book.seniwave.com</a>
 
 <progress id="init-progress" style="display: none;"></progress>
 
@@ -52,8 +51,8 @@
         <input id="span-size" name="span_size" type="number" value="30" min="5" step="5">
     </div>
     <div class="flex-cl">
-        <label for="">Break time (minutes):</label>
-        <input id="break-size" name="break_size" type="number" value="10" min="0" step="10" disabled>
+        <label for="break-size">Break time (minutes):</label>
+        <input id="break-size" name="break_size" type="number" value="10" min="0" step="1">
     </div>
 </div>
 
@@ -72,7 +71,7 @@
     hx-include="#span-size, #start-time, #end-time, #break-size, input[type='checkbox']"
     hx-trigger="click"
     hx-target="#span-status"
-    hx-swap="outerHTML"
+    hx-swap="#span-status"
     hx-indicator="#span-progress"
 >
     UPDATE

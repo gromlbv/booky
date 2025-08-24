@@ -2,7 +2,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from sqlalchemy import func
 
-from models import db, DayOfWeek, TimeSpan
+from models import db, DayOfWeek, TimeSpan, CalendarDay
 from models import db
 
 from mysecurity import myhash, verify, encode
@@ -20,8 +20,6 @@ DEFAULT_BREAK_SIZE = 15
 
 WORK_START = 0 * 60
 WORK_END = 24 * 60
-#WORK_START = 9 * 60
-#WORK_END = 18 * 60
 
 
 def clear_time_spans():
@@ -34,25 +32,21 @@ def clear_days_of_week():
 
 def generate_time_spans_for_day(day_of_week, span_size, break_size):
     start = WORK_START
-    count = 0
     while start + span_size + break_size <= WORK_END:
         span = TimeSpan(start=start, end=start + span_size)
         span.day_of_week = day_of_week
         span.is_working = False
         db.session.add(span)
         start += span_size + break_size
-        count += 1
 
-def set_work_time(start, end, time_span_size, break_time):
-    count = 0
-    start = start
-    while start < end:
-        spans = TimeSpan.query.filter_by(start=start).all()
+def set_work_time(start, end, time_span_size, break_size):
+    current = start
+    while current < end:
+        spans = TimeSpan.query.filter(TimeSpan.start >= current, TimeSpan.start < current + time_span_size).all()
         for span in spans:
             span.is_working = True
-        start += time_span_size + break_time
-        print(f"set_work_time: set working for {start//60}:{start%60:02d}")
-        count += 1
+        current += time_span_size + break_size
+        print(f"set_work_time: set working for {current//60}:{current%60:02d}")
         
     try:
         db.session.commit()
@@ -85,15 +79,16 @@ def init_all(span_size = DEFAULT_TIME_SPAN_SIZE):
     init_time_spans(span_size=span_size)
 
 
-
-
 def get_available_time_spans(date):
     print(f"get_available_time_spans: date={date}")
     day_of_week = DayOfWeek.query.filter_by(id=date).first()
     if day_of_week is None:
         return []
-    #if day_of_week.is_holiday:
+    calendar_day = CalendarDay.query.filter_by(day_of_week=day_of_week).first()
+    #if calendar_day.is_holiday:
         #return []
     if not day_of_week.is_working:
         return []
     return TimeSpan.query.filter_by(day_of_week=day_of_week, is_working=True).all()
+
+

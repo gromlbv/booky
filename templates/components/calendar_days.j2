@@ -1,0 +1,22 @@
+{% macro calendar_days(year, month, days_data) %}
+{% for day_info in days_data %}
+    {% if day_info.is_empty %}
+        <button class="day empty" tabindex="-1" disabled></button>
+    {% else %}
+        {% if day_info.is_available %}
+            {% set day_class = day_class + " available" %}
+        {% endif %}
+        {% if day_info.is_today %}
+            {% set day_class = day_class + " today" %}
+        {% endif %}
+        
+        <button 
+            data-date="{{ day_info.date }}"
+            data-description="{{ day_info.description }}"
+            {% if not day_info.is_available %}disabled{% endif %}>
+            {{ day_info.day_number }}
+        </button>
+    {% endif %}
+{% endfor %}
+{% endmacro %}
+

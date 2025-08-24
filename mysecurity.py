@@ -1,10 +1,12 @@
+from os import getenv
 from hashlib import sha256
-import jwt
-
 from datetime import datetime, timedelta
+
+import jwt
 import time
 
-secretkey = 'localtesting'
+
+secretkey = getenv('SECRET_KEY')
 
 
 def myhash(message):

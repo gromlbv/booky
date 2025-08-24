@@ -1,0 +1,63 @@
+{% from 'components/date_block.j2' import date_block %}
+{% from 'components/time_block.j2' import time_block %}
+{% from 'components/menu.j2' import menu_view %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Book meeting with Seniwave</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script type="module" src="https://lbvo.ru/utils/init.js" async defer></script>
+
+    <link rel="stylesheet" href="/static/styles/main.css">
+
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#000000">
+</head>
+
+<body>
+    <header class="flex-between w-100">
+        <a class="no-fill circle" href="https://seniwave.com" data-description="Back to SeniWave">
+            <img src="/static/icons/arrow.svg" style="transform: rotate(180deg);">
+        </a>
+        <button class="no-fill circle toggle-menu" data-description="Menu">
+            <img src="/static/icons/menu.svg" style="transform: rotate(180deg);">
+        </button>
+    </header>
+    
+    <div class="global">
+        <div class="wrapper gap-12">
+            {{ date_block() }}
+            {{ time_block() }}
+        </div>
+        {{ menu_view() }}
+    </div>
+
+    <script src="/static/scripts/tooltip.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.toggle-menu').click(function() {
+                $('body').toggleClass('menu-open');
+                $('.wrapper').toggleClass('menu-open');
+                $('.global').toggleClass('menu-open');
+                $('.menu').toggleClass('menu-open');
+            });
+            $('.wrapper').click(function() {
+                $('body').removeClass('menu-open');
+                $('.wrapper').removeClass('menu-open');
+                $('.global').removeClass('menu-open');
+                $('.menu').removeClass('menu-open');
+            });
+        });
+    </script>
+
+</body>
+
+
+</html>

@@ -1,0 +1,31 @@
+{% macro date_block(year=2025, month=6) %}
+{% from 'components/calendar.j2' import calendar_component %}
+<div class="block date">
+    <div class="left-side">
+        <div class="flex gap-12 align-center">
+            <img class="logo-animated" src="/static/logos/default.svg" alt="Purple logo with blue wave">
+            <div class="flex-cl">
+                <h3>Maria Abakumova</h3>
+                <p>from Seniwave</p>
+            </div>
+        </div>
+        <div class="">
+            <h2 class="p-8-0">Choose a meeting date</h2>
+            <hr>
+            <div class="flex align-center gap-12 p-8-4">
+                <img src="/static/icons/clock.svg" alt="Clock">
+                <p>30 min</p>
+            </div>
+            <div class="flex align-center gap-12 p-8-4">
+                <img src="/static/icons/phone.svg" alt="Phone">
+                <p>Online Meeting</p>
+            </div>
+            <hr>
+            <p class="p-8-0">Let's find a time to meet!</p>
+        </div>
+    </div>
+    <div class="right-side calendar">
+        {{ calendar_component(year, month) }}
+    </div>
+</div>
+{% endmacro %}

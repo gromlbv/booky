@@ -14,15 +14,25 @@ import redis
 
 from functools import wraps
 
+from env_service import getenv
 
 app = Flask(__name__)
 create_app(app)
 
-app.secret_key = 'localtesting'
+app.secret_key = getenv('SECRET_KEY')
 
 r = redis.Redis()
 
 
+class ReturnTemplate:
+    def __init__(self, name=''):
+        self.name = name
+    def __call__(self, **kwds) -> str:
+        return render_template(f"{self.name}.j2", **kwds, request=request, hello="qqqqqq")
+    def __getattr__(self, name):
+        return ReturnTemplate(self.name + '/' + name)
+
+R = ReturnTemplate()
 
 def rate_limit(timeout=1, max_attempts=5):
     def decorator(f):
@@ -63,20 +73,22 @@ def is_loggined():
             return True
     return False
 
-
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return R.index()
 
+@app.route('/debug')
+def debug():
+    return R.debug()
 
 @app.get('/admin')
 def admin():
-    return render_template("admin.html")
+    return R.admin()
 
 @app.post("/api/init/all",)
 def init_all():
     db.init_all()
-    return "<span class='post-result' id='init-status'>DONE</span>"
+    return "DONE"
 
 from models import DayOfWeek
 from models import db as database
@@ -94,13 +106,12 @@ def init_spans():
     db.set_work_time(start_minutes, end_minutes, size, break_size)
 
     days = DayOfWeek.query.all()
+    
     for day in days:
         if f"{day.id}" in request.form:
-            print(f"init_days: set {day.id} to working")
-            day.set_to_working()
+            day.set_working()
         else:
-            print(f"init_days: set {day.id} to not working")
-            day.set_to_not_working()
+            day.set_not_working()
 
     database.session.commit()
 
@@ -108,6 +119,7 @@ def init_spans():
 
 from models import DayOfWeek, TimeSpan
 from datetime import datetime
+import calendar
 
 @app.route("/api/available")
 def available_slots():
@@ -136,6 +148,70 @@ def available_slots():
     html += "</ul>"
 
     return html
+
+@app.route("/api/calendar/<int:year>/<int:month>")
+def get_calendar(year, month):    
+    print(f"get_calendar called with year={year}, month={month}")
+    
+    cal = calendar.monthcalendar(year, month)
+    
+    today = datetime.now()
+    is_current_month = today.year == year and today.month == month
+    
+    html = ""
+
+    print(f"Calendar data: {cal}")
+    
+    for week in cal:
+        for day in week:
+            if day == 0:
+                html += '<button class="day empty" tabindex="-1" disabled></button>'
+            else:
+                date_str = f"{year:04d}-{month:02d}-{day:02d}"
+                date_obj = datetime(year, month, day)
+                dow = date_obj.weekday()
+                
+                day_of_week = DayOfWeek.query.get(dow + 1)
+                is_available = day_of_week and day_of_week.is_working
+                
+                is_today = is_current_month and today.day == day
+                
+                classes = ["day"]
+                if is_available:
+                    classes.append("available")
+                if is_today:
+                    classes.append("today")
+                
+                class_str = " ".join(classes)
+                disabled = "" if is_available else "disabled"
+                
+                if is_today:
+                    description = "Today"
+                elif is_available:
+                    description = "Available for booking"
+                else:
+                    description = "Not available"
+                
+                html += f'''<button 
+                    class="{class_str}" 
+                    data-date="{date_str}"
+                    data-description="{description}"
+                    {disabled}>
+                    {day}
+                </button>'''
+    
+    print(f"Returning HTML length: {len(html)}")
+    print(f"HTML preview: {html[:200]}...")
+    return html
+
+
+def get_date_availabiltiy(date_str):
+    date = datetime.strptime(date_str, "%Y-%m-%d")
+    dow = date.weekday()
+    day_of_week = DayOfWeek.query.get(dow + 1)
+    if not day_of_week or not day_of_week.is_working:
+        return False
+    return True
 
 
 if __name__ == "__main__":

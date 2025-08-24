@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 
 from sqlalchemy.orm import Mapped, relationship
 
+from env_service import getenv
 
 db = SQLAlchemy()
 
@@ -11,7 +12,7 @@ def migrate(app, db):
     Migrate(app, db)
 
 def create_app(app):
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+    app.config["SQLALCHEMY_DATABASE_URI"] = getenv('DATABASE_URI')
     app.config ["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
     migrate(app, db)
@@ -31,30 +32,31 @@ class DayOfWeek(db.Model):
     def __init__(self, is_working):
         self.is_working = is_working
     
-    def set_to_working(self):
+    def set_working(self):
         self.is_working = True
 
-    def set_to_not_working(self):
+    def set_not_working(self):
         self.is_working = False
 
-class Day(db.Model):
-    __tablename__ = 'days'
+class CalendarDay(db.Model):
+    __tablename__ = 'calendar_days'
     id = db.Column(db.Integer, primary_key=True)
 
     is_holiday = db.Column(db.Boolean, default=True, nullable=False)
 
     day_of_week_id = db.Column(db.Integer, db.ForeignKey('days_of_week.id'), nullable=False)
-    day_of_week = relationship("DayOfWeek", backref="days")
+    day_of_week = relationship("DayOfWeek", backref="calendar_days")
 
     def __init__(self, is_holiday, day_of_week):
         self.is_holiday = is_holiday
         self.day_of_week = day_of_week
 
-    def set_to_holiday(self):
+    def set_holiday(self):
         self.is_holiday = True
-     
-    def remove_holiday(self):
+
+    def set_not_holiday(self):
         self.is_holiday = False
+
 
 class TimeSpan(db.Model):
     __tablename__ = 'time_spans'
@@ -72,7 +74,7 @@ class TimeSpan(db.Model):
         self.start = start
         self.end = end
 
-    def set_to_working(self):
+    def set_working(self):
         self.is_working = True
 
 
