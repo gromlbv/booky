@@ -1,25 +1,26 @@
 from flask import Flask
 from flask import render_template, session, request, flash, redirect, jsonify, url_for, send_from_directory
 
-import utils
 from utils import json_response
 
 import mydb as db
 
 from mysecurity import verify, decode
 from models import create_app, create_tables, TimeSpan
-from upload import upload_image, upload_file, upload_unity_build
 from mail_service import send_code, send_report
 
 import redis
 import random
-from datetime import datetime
-from functools import wraps
 
+from functools import wraps
+from datetime import datetime
 from env_service import getenv
 
 app = Flask(__name__)
 create_app(app)
+
+with app.app_context():
+    create_tables()
 
 app.secret_key = getenv('SECRET_KEY')
 
@@ -108,21 +109,15 @@ def send_code_post():
     service = request.form.get('service')
     message = request.form.get('message')
 
-    slot_id = request.form.get('slot-id')
+    date = request.form.get('date')
+    time = request.form.get('time')
 
-    if not email or not name or not slot_id:
+    if not email or not name or not date or not time:
         return 'Not all fields are filled or something went wrong'
-    
-    slot = TimeSpan.query.get(slot_id)
-    if not slot:
-        return 'Slot not found'
-    
-    if slot.is_working:
-        return 'Slot is not working'
 
     code = random.randint(1000, 9999)
     print(f"Sending code to {email} with code {code} and name {name}")
-    send_code(destination=email, code=code, name=name, service=service, message=message, slot_id=slot_id)
+    send_code(destination=email, code=code, name=name, service=service, message=message, slot_id='1')
     return R.confirmed()
 
 
@@ -271,8 +266,6 @@ def get_calendar(year, month):
                     {day}
                 </button>'''
     
-    print(f"Returning HTML length: {len(html)}")
-    print(f"HTML preview: {html[:200]}...")
     return html
 
 

@@ -45,8 +45,9 @@
             {% block content %}
             {{ date_block() }}
             {{ time_block() }}
-            <form class="confirmation" method="POST" action="/submit">
-                <input type="hidden" id="hidden-slot-id" name="slot-id" value="">
+            <form class="confirmation hidden" method="POST" action="/submit">
+                <input type="hidden" id="hidden-date" name="date" value="">
+                <input type="hidden" id="hidden-time" name="time" value="">
                 {{ confirm_block("", "") }}
                 {{ details_block() }}
                 <button class="accent" type="submit">

@@ -12,10 +12,6 @@ $(document).ready(function() {
             $('#hidden-time').val(time);
         }
     }
-    function updateSlotId(slotId) {
-        $('#hidden-slot-id').val(slotId);
-    }
-
     const monthNames = {
         1: 'January', 2: 'February', 3: 'March', 4: 'April', 
         5: 'May', 6: 'June', 7: 'July', 8: 'August', 
@@ -114,8 +110,7 @@ $(document).ready(function() {
         const selectedDate = $('.day.selected').data('date');
         const timeText = `${start}<br>${end}`;
         updateConfirmBlock(selectedDate, timeText);
-        updateSlotId(slotId);
-
+        
         console.log('Selected time slot:', slotId, start, '-', end);
     });
 
@@ -135,15 +130,17 @@ $(document).ready(function() {
     $(document).on('submit', '.confirmation', function(e) {
         e.preventDefault();
         
-        const slotId = $('#hidden-slot-id').val();
+        const date = $('#hidden-date').val();
+        const time = $('#hidden-time').val();
         
-        if (!slotId) {
+        if (!date || !time) {
             alert('Please select date and time first');
             return false;
         }
         
         console.log('Form data:', {
-            slotId: slotId,
+            date: date,
+            time: time,
             name: $('#name').val(),
             email: $('#email').val(),
             services: $('#services').val(),
