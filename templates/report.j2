@@ -1,0 +1,24 @@
+{% extends 'index.j2' %}
+
+{% block back_button %}
+<a class="no-fill circle" href="/" data-description="Back to booking">
+    <img src="/static/icons/arrow.svg" style="transform: rotate(180deg);">
+</a>
+{% endblock back_button %}
+
+{% block content %}
+<form class="flex-cl gap-24 align-center"
+    hx-post="/report" hx-target="#report-form" hx-swap="outerHTML" id="report-form">
+    <div class="block report flex-cl gap-0">
+        <h1>Report bug</h1>
+        <label for="name" required>Name</label>
+        <input type="text" name="name" id="name" placeholder="Name">
+        <label for="email" required>Email</label>
+        <input type="email" name="email" id="email" placeholder="Email">
+        <label for="message" required>What is the issue?</label>
+        <input type="text" name="message" id="message" placeholder="Describe the issue">
+    </div>
+    <button class="accent" type="submit">Report</button>
+</form>
+
+{% endblock content %}

@@ -71,7 +71,7 @@ input {
     margin-bottom: 0.2rem;
 }
 
-input:focus {
+input:focus-visible {
     outline: none;
     border-color: #007aff;
     box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
@@ -112,7 +112,7 @@ button:active {
     transform: translateY(0);
 }
 
-button:focus {
+button:focus-visible {
     outline: 2px solid var(--contrast-to-accent);
 }
 
@@ -154,19 +154,6 @@ a{
 }
 
 
-
-
-
-
-.flex-cl{
-    display: flex;
-    flex-direction: column;
-}
-.flex-between{
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
 
 input[type='checkbox']{
     width: 12px;

@@ -18,4 +18,22 @@
 		<img class="logo-animated" src="/static/logos/default.svg" alt="Purple logo with blue wave">
 	</div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('.toggle-menu').click(function() {
+            $('body').toggleClass('menu-open');
+            $('.wrapper').toggleClass('menu-open');
+            $('.global').toggleClass('menu-open');
+            $('.menu').toggleClass('menu-open');
+        });
+        $('.wrapper').click(function() {
+            $('body').removeClass('menu-open');
+            $('.wrapper').removeClass('menu-open');
+            $('.global').removeClass('menu-open');
+            $('.menu').removeClass('menu-open');
+        });
+    });
+</script>
+
 {% endmacro %}

@@ -78,13 +78,16 @@ class TimeSpan(db.Model):
         self.is_working = True
 
 
+import uuid
+
 class MeetingRequest(db.Model):
     __tablename__ = 'meeting_requests'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
 
     name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
-    text_problem = db.Column(db.String)
+    service = db.Column(db.String)
+    message = db.Column(db.String)
 
     timespan_id = db.Column(db.Integer, db.ForeignKey('time_spans.id'), nullable=False)
     time_span = relationship('TimeSpan', backref='meeting_requests')

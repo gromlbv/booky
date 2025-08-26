@@ -1,0 +1,22 @@
+{% macro confirm_block(date="", time="") %}
+<h1 class="center">Meeting with <img class="logo-animated" src="/static/logos/small.svg" alt="SeniWave" align="bottom">SeniWave</h1>
+<div class="block confirm flex-cl gap-12">
+    <div class="flex">
+        <div class="left-side flex-cl flex-between gap-32">
+            <h2 id="confirm-date">{{ date or "Select date" }}</h2>
+            <div class="flex-cl">
+                <p>30 min</p>
+                <p>Online Meeting</p>
+            </div>
+        </div>
+        <div class="right-side flex-cl flex-between align-end">
+            <h1 id="confirm-time">{{ time or "??:??<br>??:??" }}</h1>
+            <p>GMT + 03:00</p>
+        </div>
+    </div>
+    <button class="default full" id="return-to-edit" type="button">
+        Return to edit
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="18" viewBox="0 0 20 18" fill="none"><path d="M18.9991 16.9164L18.5195 16.4567C17.4498 15.4315 15.8638 15.3752 14.7352 16.3224C13.6641 17.2213 12.1717 17.2213 11.1006 16.3224L11.0378 16.2697C10.7416 16.0211 10.4142 15.8389 10.0723 15.7232M3.96923 16.4856L4.11182 16.4344C4.44725 16.314 4.61497 16.2538 4.77172 16.1729C4.91093 16.101 5.04353 16.0169 5.16798 15.9217C5.30809 15.8145 5.43409 15.6885 5.6861 15.4365L16.6843 4.43838C17.4709 3.65181 17.4709 2.37651 16.6843 1.58993C15.8977 0.803361 14.6225 0.803355 13.8359 1.58992L2.83712 12.5885C2.58531 12.8403 2.45941 12.9663 2.35226 13.1062C2.2571 13.2306 2.17308 13.3631 2.10118 13.5022C2.02023 13.6588 1.96002 13.8263 1.8396 14.1615L1.78838 14.304C1.39793 15.3906 1.2027 15.934 1.32562 16.2892C1.43249 16.598 1.67512 16.8407 1.98391 16.9477C2.33907 17.0707 2.88246 16.8757 3.96923 16.4856Z" stroke="white" stroke-opacity="0.24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+</div>
+{% endmacro %}

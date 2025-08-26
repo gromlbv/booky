@@ -1,5 +1,5 @@
 {% macro date_block(year=2025, month=6) %}
-{% from 'components/calendar.j2' import calendar_component %}
+{% from 'components/calendar_view.j2' import calendar_view %}
 <div class="block date">
     <div class="left-side">
         <div class="flex gap-12 align-center">
@@ -25,7 +25,7 @@
         </div>
     </div>
     <div class="right-side calendar">
-        {{ calendar_component(year, month) }}
+        {{ calendar_view(year, month) }}
     </div>
 </div>
 {% endmacro %}

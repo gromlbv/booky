@@ -1,6 +1,8 @@
 {% from 'components/date_block.j2' import date_block %}
 {% from 'components/time_block.j2' import time_block %}
-{% from 'components/menu.j2' import menu_view %}
+{% from 'components/confirm_block.j2' import confirm_block %}
+{% from 'components/details_block.j2' import details_block %}
+{% from 'components/menu_view.j2' import menu_view %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,46 +19,55 @@
 
     <link rel="stylesheet" href="/static/styles/main.css">
 
+    <link rel="icon" href="/static/favicon/fav.ico" sizes="48x48" type="image/x-icon">
+    <link rel="icon" href="/static/favicon/fav.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="/static/favicon/fav.png" sizes="48x48">
+    <link rel="icon" href="/static/favicon/fav.svg" type="image/svg+xml">
+
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="#000000">
 </head>
 
 <body>
     <header class="flex-between w-100">
+        {% block back_button%}
         <a class="no-fill circle" href="https://seniwave.com" data-description="Back to SeniWave">
             <img src="/static/icons/arrow.svg" style="transform: rotate(180deg);">
         </a>
+        {% endblock back_button %}
         <button class="no-fill circle toggle-menu" data-description="Menu">
             <img src="/static/icons/menu.svg" style="transform: rotate(180deg);">
         </button>
     </header>
     
     <div class="global">
-        <div class="wrapper gap-12">
+        <div class="wrapper">
+            {% block content %}
             {{ date_block() }}
             {{ time_block() }}
+            <form class="confirmation" method="POST" action="/submit">
+                <input type="hidden" id="hidden-slot-id" name="slot-id" value="">
+                {{ confirm_block("", "") }}
+                {{ details_block() }}
+                <button class="accent" type="submit">
+                    Confirm
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="14" viewBox="0 0 17 14" fill="none"><path d="M1.5 7.45833C3.6875 8.83333 4.85841 10.0953 6.16667 12.5C7.625 8.83333 11.125 3.33333 15.5 1.5" stroke="#EFEFEF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+            </form>
+            {% endblock content %}
         </div>
         {{ menu_view() }}
     </div>
 
-    <script src="/static/scripts/tooltip.js"></script>
     <script>
-        $(document).ready(function() {
-            $('.toggle-menu').click(function() {
-                $('body').toggleClass('menu-open');
-                $('.wrapper').toggleClass('menu-open');
-                $('.global').toggleClass('menu-open');
-                $('.menu').toggleClass('menu-open');
-            });
-            $('.wrapper').click(function() {
-                $('body').removeClass('menu-open');
-                $('.wrapper').removeClass('menu-open');
-                $('.global').removeClass('menu-open');
-                $('.menu').removeClass('menu-open');
-            });
-        });
+        window.calendarData = {
+            year: {{ year }},
+            month: {{ month }}
+        };
     </script>
 
+    <script src="/static/scripts/main.js"></script>
+    <script src="/static/scripts/tooltip.js"></script>
 </body>
 
 

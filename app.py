@@ -7,11 +7,13 @@ from utils import json_response
 import mydb as db
 
 from mysecurity import verify, decode
-from models import create_app, create_tables
+from models import create_app, create_tables, TimeSpan
 from upload import upload_image, upload_file, upload_unity_build
+from mail_service import send_code, send_report
 
 import redis
-
+import random
+from datetime import datetime
 from functools import wraps
 
 from env_service import getenv
@@ -31,8 +33,9 @@ class ReturnTemplate:
         return render_template(f"{self.name}.j2", **kwds, request=request, hello="qqqqqq")
     def __getattr__(self, name):
         return ReturnTemplate(self.name + '/' + name)
-
+    
 R = ReturnTemplate()
+
 
 def rate_limit(timeout=1, max_attempts=5):
     def decorator(f):
@@ -63,7 +66,6 @@ def rate_limit(timeout=1, max_attempts=5):
         return wrapper
     return decorator
 
-
 def is_loggined():
     if 'token' in session:
         user_token = session['token']
@@ -73,9 +75,14 @@ def is_loggined():
             return True
     return False
 
+
+
+# MAIN
+
 @app.route('/')
 def index():
-    return R.index()
+    now = datetime.now()
+    return R.index(year=now.year, month=now.month)
 
 @app.route('/debug')
 def debug():
@@ -85,37 +92,42 @@ def debug():
 def admin():
     return R.admin()
 
-@app.post("/api/init/all",)
-def init_all():
-    db.init_all()
-    return "DONE"
+@app.get('/report')
+def report():
+    return R.report()
 
-from models import DayOfWeek
-from models import db as database
+@app.post('/report')
+def report_post():
+    send_report(name=request.form.get('name'), email=request.form.get('email'), message=request.form.get('message'))
+    return 'OK'
 
-@app.post("/api/init/spans")
-def init_spans():
-    size = int(request.form.get("span_size", 30))
-    start = int(request.form.get("start_time", 0))
-    end = int(request.form.get("end_time", 24))
-    break_size = int(request.form.get("break_size", 15))
-    start_minutes = start * 60
-    end_minutes = end * 60
+@app.post('/submit')
+def send_code_post():
+    email = request.form.get('email')
+    name = request.form.get('name')
+    service = request.form.get('service')
+    message = request.form.get('message')
 
-    db.init_time_spans(span_size=size, break_size=break_size)
-    db.set_work_time(start_minutes, end_minutes, size, break_size)
+    slot_id = request.form.get('slot-id')
 
-    days = DayOfWeek.query.all()
+    if not email or not name or not slot_id:
+        return 'Not all fields are filled or something went wrong'
     
-    for day in days:
-        if f"{day.id}" in request.form:
-            day.set_working()
-        else:
-            day.set_not_working()
+    slot = TimeSpan.query.get(slot_id)
+    if not slot:
+        return 'Slot not found'
+    
+    if slot.is_working:
+        return 'Slot is not working'
 
-    database.session.commit()
+    code = random.randint(1000, 9999)
+    print(f"Sending code to {email} with code {code} and name {name}")
+    send_code(destination=email, code=code, name=name, service=service, message=message, slot_id=slot_id)
+    return R.confirmed()
 
-    return "<span class='post-result' id='span-status'>DONE</span>"
+
+
+# API
 
 from models import DayOfWeek, TimeSpan
 from datetime import datetime
@@ -148,6 +160,65 @@ def available_slots():
     html += "</ul>"
 
     return html
+
+@app.route("/api/time-slots/<date>")
+def get_time_slots(date):
+    try:
+        date_obj = datetime.strptime(date, "%Y-%m-%d")
+        dow = date_obj.weekday()
+        
+        day_of_week = DayOfWeek.query.get(dow + 1)
+        if not day_of_week or not day_of_week.is_working:
+            return f'''<div class="block time" id="time-block">
+                <p>Then, select a time period for <span>{date}</span></p>
+                <p class="no-slots">No available time slots for this date</p>
+            </div>'''
+        
+        time_spans = TimeSpan.query.filter_by(
+            day_of_week_id=dow + 1,
+            is_working=True
+        ).all()
+        
+        slots = []
+        for span in time_spans:
+            start_h = span.start // 60
+            start_m = span.start % 60
+            end_h = span.end // 60
+            end_m = span.end % 60
+            slots.append({
+                'id': span.id,
+                'start': f"{start_h:02}:{start_m:02}",
+                'end': f"{end_h:02}:{end_m:02}",
+                'start_minutes': span.start,
+                'end_minutes': span.end
+            })
+        
+        if not slots:
+            return f'''<div class="block time" id="time-block">
+                <p>Then, select a time period for <span>{date}</span></p>
+                <p class="no-slots">No available time slots for this date</p>
+            </div>'''
+        
+        html = f'''
+            <p>Then, select a time period for <span>{date}</span></p>
+            <div class="time-slots">'''
+        
+        for slot in slots:
+            html += f'''<button class="time-slot" 
+                    data-slot-id="{slot['id']}"
+                    data-start="{slot['start']}"
+                    data-end="{slot['end']}"
+                    data-start-minutes="{slot['start_minutes']}"
+                    data-end-minutes="{slot['end_minutes']}">
+                {slot['start']}
+            </button>'''
+        
+        html += '''</div>'''
+        
+        return html
+        
+    except ValueError:
+        return "<p>Select date to continue</p>"
 
 @app.route("/api/calendar/<int:year>/<int:month>")
 def get_calendar(year, month):    
@@ -212,6 +283,43 @@ def get_date_availabiltiy(date_str):
     if not day_of_week or not day_of_week.is_working:
         return False
     return True
+
+
+
+# ADMIN
+
+@app.post("/api/init/all",)
+def init_all():
+    db.init_all()
+    return "DONE"
+
+from models import DayOfWeek
+from models import db as database
+
+@app.post("/api/init/spans")
+def init_spans():
+    size = int(request.form.get("span_size", 30))
+    start = int(request.form.get("start_time", 0))
+    end = int(request.form.get("end_time", 24))
+    break_size = int(request.form.get("break_size", 15))
+    start_minutes = start * 60
+    end_minutes = end * 60
+
+    db.init_time_spans(span_size=size, break_size=break_size)
+    db.set_work_time(start_minutes, end_minutes, size, break_size)
+
+    days = DayOfWeek.query.all()
+    
+    for day in days:
+        if f"{day.id}" in request.form:
+            day.set_working()
+        else:
+            day.set_not_working()
+
+    database.session.commit()
+
+    return "<span class='post-result' id='span-status'>DONE</span>"
+
 
 
 if __name__ == "__main__":

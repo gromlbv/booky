@@ -1,4 +1,4 @@
-{% macro calendar_component(year=2025, month=6) %}
+{% macro calendar_view(year=2025, month=6) %}
 {% set month_names = {
     1: 'January', 2: 'February', 3: 'March', 4: 'April', 
     5: 'May', 6: 'June', 7: 'July', 8: 'August', 
@@ -52,62 +52,4 @@
     </div>
 </div>
 
-<script>
-$(document).ready(function() {
-    console.log('HTMX available:', typeof htmx !== 'undefined');
-    
-    let currentYear = {{ year }};
-    let currentMonth = {{ month }};
-    const monthNames = {
-        1: 'January', 2: 'February', 3: 'March', 4: 'April', 
-        5: 'May', 6: 'June', 7: 'July', 8: 'August', 
-        9: 'September', 10: 'October', 11: 'November', 12: 'December'
-    };
-    
-    $(document).on('click', '#calendar-arrow-left, #calendar-arrow-right', function() {
-        const isLeft = $(this).attr('id') === 'calendar-arrow-left';
-        
-        if (isLeft) {
-            currentMonth = currentMonth - 1;
-            if (currentMonth < 1) {
-                currentMonth = 12;
-                currentYear--;
-            }
-        } else {
-            currentMonth = currentMonth + 1;
-            if (currentMonth > 12) {
-                currentMonth = 1;
-                currentYear++;
-            }
-        }
-        
-        $(this).closest('.head').find('h3').text(monthNames[currentMonth] + ' ' + currentYear);
-        
-        const daysContainer = $('.days');
-        
-        console.log('Days container found:', daysContainer.length);
-        console.log('Days container element:', daysContainer[0]);
-        
-        if (daysContainer.length > 0) {
-            daysContainer.attr('hx-get', `/api/calendar/${currentYear}/${currentMonth}`);
-            
-            if (typeof htmx !== 'undefined') {
-                htmx.trigger(daysContainer[0], 'calendarNav');
-                console.log('HTMX trigger sent');
-            } else {
-                daysContainer.load(`/api/calendar/${currentYear}/${currentMonth}`);
-                console.log('Fallback load used');
-            }
-        } else {
-            console.error('Days container not found!');
-        }
-    });
-    
-    $(document).on('click', '.day:not(.empty):not([disabled])', function() {
-        $('.day.selected').removeClass('selected');
-        $(this).addClass('selected');
-        console.log('Selected date:', $(this).data('date'));
-    });
-});
-</script>
 {% endmacro %}
