@@ -115,7 +115,7 @@ body{
     width: 100vw;
 
     overflow-x: hidden;
-    overflow-y: visible;
+    overflow-y: auto;
 
     background-color: var(--background-1-color);
     color: var(--primary-color);
@@ -252,6 +252,7 @@ a:disabled, button:disabled{
 
     width: fit-content;
     padding: 16px 24px;
+    margin-bottom: 24px;
     border-radius: 8px;
 
     font-size: 1rem;
@@ -690,8 +691,7 @@ header{
     width: 100vw;
     height: 100vh;
 
-    overflow-x: visible;
-    overflow-y: visible;
+    overflow: visible;
 
     background: var(--background-1-color);
 }
@@ -708,7 +708,7 @@ header{
 
     background: var(--background-1-color);
 
-    overflow: visible;
+    overflow: hidden;
 }
 
 .wrapper{
@@ -754,7 +754,7 @@ body.menu-open{
 .menu{
     align-items: flex-end;
 
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     box-sizing: border-box;
