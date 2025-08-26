@@ -6,11 +6,12 @@ from utils import json_response
 import mydb as db
 
 from mysecurity import verify, decode
-from models import create_app, create_tables, TimeSpan
+from models import create_app, create_tables, TimeSpan, CalendarDay, MeetingRequest
 from mail_service import send_code, send_report
 
 import redis
 import random
+
 
 from functools import wraps
 from datetime import datetime
@@ -82,6 +83,9 @@ def is_loggined():
 
 @app.route('/')
 def index():
+    if 'meeting_request_id' in session:
+        return redirect(url_for('confirmed', id=session['meeting_request_id']))
+
     now = datetime.now()
     return R.index(year=now.year, month=now.month)
 
@@ -102,24 +106,74 @@ def report_post():
     send_report(name=request.form.get('name'), email=request.form.get('email'), message=request.form.get('message'))
     return 'OK'
 
+
 @app.post('/submit')
 def send_code_post():
     email = request.form.get('email')
     name = request.form.get('name')
     service = request.form.get('service')
     message = request.form.get('message')
-
     date = request.form.get('date')
-    time = request.form.get('time')
+    slot_id = request.form.get('slot_id')
 
-    if not email or not name or not date or not time:
+    if not email or not name or not date or not slot_id:
         return 'Not all fields are filled or something went wrong'
 
-    code = random.randint(1000, 9999)
-    print(f"Sending code to {email} with code {code} and name {name}")
-    send_code(destination=email, code=code, name=name, service=service, message=message, slot_id='1')
-    return R.confirmed()
+    time_span = TimeSpan.query.get(slot_id)
+    if not time_span:
+        return 'Time slot not found'
 
+    date_obj = datetime.strptime(date, "%Y-%m-%d")
+    calendar_day = CalendarDay.query.filter_by(date=date_obj).first()
+    if not calendar_day:
+        calendar_day = CalendarDay(date=date_obj)
+        database.session.add(calendar_day)
+
+    meeting_request = MeetingRequest(
+        name=name, 
+        email=email,
+        service=service,
+        message=message,
+        time_span=time_span,
+        calendar_day=calendar_day
+    )
+
+    code = meeting_request.set_meet_code()
+    database.session.add(meeting_request)
+    database.session.commit()
+
+    
+    start_time = f"{time_span.start // 60:02d}:{time_span.start % 60:02d}"
+    end_time = f"{time_span.end // 60:02d}:{time_span.end % 60:02d}"
+
+    send_code(email, name, service, message, date, start_time, end_time, code)
+    
+    return redirect(url_for('confirmed', id=meeting_request.id))
+
+
+@app.route('/meet/<id>')
+def confirmed(id):
+    meeting_request = MeetingRequest.query.get(id)
+    if not meeting_request:
+        session_meeting_request_id = session.get('meeting_request_id', None)
+        if session_meeting_request_id == id:
+            session.pop('meeting_request_id', None)
+        return 'Meeting request not found'
+
+
+    time_span = meeting_request.time_span
+    date = meeting_request.calendar_day.date
+    start_time = time_span.start
+    end_time = time_span.end
+
+    #conversion to 'june 15, 2025'
+    date = date.strftime('%B %d, %Y')
+    #conversion to '09:30'
+    start_time = f"{start_time // 60:02d}:{start_time % 60:02d}"
+    end_time = f"{end_time // 60:02d}:{end_time % 60:02d}"
+
+    session['meeting_request_id'] = meeting_request.id
+    return R.confirmed(meeting_request=meeting_request, date=date, start_time=start_time, end_time=end_time)
 
 
 # API
@@ -127,6 +181,29 @@ def send_code_post():
 from models import DayOfWeek, TimeSpan
 from datetime import datetime
 import calendar
+
+
+@app.route("/api/cancel/<id>")
+def cancel_meeting(id):
+    meeting_request = MeetingRequest.query.filter_by(id=id).first()
+    if not meeting_request:
+        return 'Meeting request not found', 400
+    meeting_request.cancel()
+    session.pop('meeting_request_id', None)
+    return 'Meeting cancelled! Redirecting...'
+
+@app.route("/api/resend/<id>")
+def resend_code(id):
+    meeting_request = MeetingRequest.query.filter_by(id=id).first()
+    if not meeting_request:
+        return 'Meeting request not found', 400
+
+    date = meeting_request.calendar_day.date
+    start_time = meeting_request.time_span.start
+    end_time = meeting_request.time_span.end
+
+    send_code(meeting_request.email, meeting_request.meet_code, meeting_request.name, meeting_request.service, meeting_request.message, date, start_time, end_time)
+    return 'Mail resent!'
 
 @app.route("/api/available")
 def available_slots():
@@ -164,10 +241,10 @@ def get_time_slots(date):
         
         day_of_week = DayOfWeek.query.get(dow + 1)
         if not day_of_week or not day_of_week.is_working:
-            return f'''<div class="block time" id="time-block">
+            return f'''
                 <p>Then, select a time period for <span>{date}</span></p>
                 <p class="no-slots">No available time slots for this date</p>
-            </div>'''
+            '''
         
         time_spans = TimeSpan.query.filter_by(
             day_of_week_id=dow + 1,
@@ -189,10 +266,10 @@ def get_time_slots(date):
             })
         
         if not slots:
-            return f'''<div class="block time" id="time-block">
+            return f'''
                 <p>Then, select a time period for <span>{date}</span></p>
                 <p class="no-slots">No available time slots for this date</p>
-            </div>'''
+            '''
         
         html = f'''
             <p>Then, select a time period for <span>{date}</span></p>

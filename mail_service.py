@@ -1,4 +1,5 @@
 import sys
+import asyncio
 from smtplib import SMTP_SSL as SMTP
 from email.mime.text import MIMEText
 
@@ -30,11 +31,15 @@ def send_mail(destination, msg, sub):
         print("mail sent")
 
 
-def send_code(destination, code, name, service, message, slot_id):
+def send_code(destination, code, name, service, message, date, start_time, end_time):
     subject = 'Your Meeting Code'
     letter = f"""\
     <h1>Hello, {name}!</h1>
     <p>This is a test message from SeniWave</p>
+    <p>Date: {date}</p>
+    <p>Time: {start_time} - {end_time}</p>
+    <p>Service: {service}</p>
+    <p>Message: {message}</p>
     <p>Your code is <b>{code}</b></p>
     <hr style="opacity: 0.2;">
     <a href="https://meet.seniwave.com/rooms/{code}" style="margin-top: 18px; color: #ffffff; text-decoration: none; background-color: #5f00ff; padding: 10px 20px; border-radius: 24px; display: inline-block;" font-size="18px">Join meeting</a>

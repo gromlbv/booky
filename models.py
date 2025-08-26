@@ -1,10 +1,12 @@
 import random
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+import uuid
 
-from sqlalchemy.orm import Mapped, relationship
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
 
 from env_service import getenv
+
 
 db = SQLAlchemy()
 
@@ -42,14 +44,14 @@ class CalendarDay(db.Model):
     __tablename__ = 'calendar_days'
     id = db.Column(db.Integer, primary_key=True)
 
-    is_holiday = db.Column(db.Boolean, default=True, nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    is_holiday = db.Column(db.Boolean, default=False, nullable=False)
 
-    day_of_week_id = db.Column(db.Integer, db.ForeignKey('days_of_week.id'), nullable=False)
+    day_of_week_id = db.Column(db.Integer, db.ForeignKey('days_of_week.id'))
     day_of_week = relationship("DayOfWeek", backref="calendar_days")
 
-    def __init__(self, is_holiday, day_of_week):
-        self.is_holiday = is_holiday
-        self.day_of_week = day_of_week
+    def __init__(self, date):
+        self.date = date
 
     def set_holiday(self):
         self.is_holiday = True
@@ -77,8 +79,9 @@ class TimeSpan(db.Model):
     def set_working(self):
         self.is_working = True
 
+    def set_not_working(self):
+        self.is_working = False
 
-import uuid
 
 class MeetingRequest(db.Model):
     __tablename__ = 'meeting_requests'
@@ -92,16 +95,22 @@ class MeetingRequest(db.Model):
     timespan_id = db.Column(db.Integer, db.ForeignKey('time_spans.id'), nullable=False)
     time_span = relationship('TimeSpan', backref='meeting_requests')
 
+    calendar_day_id = db.Column(db.Integer, db.ForeignKey('calendar_days.id'), nullable=False)
+    calendar_day = relationship('CalendarDay', backref='meeting_requests')
+
     meet_code = db.Column(db.Integer)
 
-    def __init__(self, name, email, text_problem, time_span):
+    def __init__(self, name, email, service, message, time_span, calendar_day):
         self.name = name
         self.email = email
-        self.text_problem = text_problem
+        self.service = service
+        self.message = message
         self.time_span = time_span
+        self.calendar_day = calendar_day
 
     def set_meet_code(self):
         self.meet_code = random.randint(0000, 9999)
+        return self.meet_code
 
     def cancel(self):
         db.session.delete(self)

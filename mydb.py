@@ -18,8 +18,8 @@ def save_to_db(instance):
 DEFAULT_TIME_SPAN_SIZE = 30
 DEFAULT_BREAK_SIZE = 15
 
-WORK_START = 0 * 60
-WORK_END = 24 * 60
+WORK_START = 9 * 60
+WORK_END = 19 * 60
 
 
 def clear_time_spans():
@@ -90,5 +90,3 @@ def get_available_time_spans(date):
     if not day_of_week.is_working:
         return []
     return TimeSpan.query.filter_by(day_of_week=day_of_week, is_working=True).all()
-
-

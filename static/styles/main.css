@@ -33,6 +33,9 @@
     --background-1-color: #101010;
     --background-2-color: #1E1E1E;
     --background-3-color: #303030;
+
+    --smooth-bezier: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --smooth-transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 :root[data-theme="dark"] {
@@ -66,6 +69,9 @@
 .flex-cl{
     display: flex;
     flex-direction: column;
+}
+.flex-wrap{
+    flex-wrap: wrap;
 }
 .align-center{
     align-items: center;
@@ -194,6 +200,9 @@ a, button{
         user-select: none;
         transition: filter 0.2s;
     }
+    svg path{
+        stroke: var(--primary-color) !important;
+    }
 }
 a:active:not(:disabled), button:active:not(:disabled){
     background: var(--accent-color) !important;
@@ -225,24 +234,27 @@ a:disabled, button:disabled{
     border-radius: 8px;
 
     font-size: 1rem;
-    font-weight: 500;
+    font-weight: 600;
 
     color: var(--secondary-color);
     background-color: var(--background-3-color);
     border-radius: 99px;
 }
+.default.bg-2{
+    background-color: var(--background-2-color);
+}
+.default.no-bg{
+    background-color: transparent;
+}
 .default:hover{
     background-color: var(--accent-05-color);
+    color: var(--primary-color);
     transform: scale(1.02);
 }
 .default:active{
     border-radius: 16px;
 }
 
-.default.full{
-    justify-content: space-between;
-    width: 100%;
-}
 
 .accent{
     display: flex;
@@ -256,7 +268,7 @@ a:disabled, button:disabled{
     border-radius: 8px;
 
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
 
     color: var(--primary-color);
     background-color: var(--accent-color);
@@ -282,6 +294,12 @@ a:disabled, button:disabled{
     text-decoration: none;
     cursor: pointer;
 }
+.no-fill:hover{
+    background-color: var(--tertiary-color);
+    color: var(--accent-color);
+    transform: scale(1.1);
+}
+
 .circle{
     display: flex;
     align-items: center;
@@ -291,12 +309,12 @@ a:disabled, button:disabled{
     width: 3rem;
     height: 3rem;
 }
-.no-fill:hover{
-    background-color: var(--tertiary-color);
-    color: var(--accent-color);
-    transform: scale(1.1);
-}
 
+
+.full{
+    justify-content: space-between;
+    width: 100%;
+}
 
 /* input{
     border: 1px solid var(--tertiary-color);
@@ -708,19 +726,25 @@ header{
 
     background: var(--background-1-color);
 
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .wrapper{
-    transition: min-width 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-radius 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition:
+        min-width 0.2s var(--smooth-bezier),
+        border-radius 0.2s var(--smooth-bezier);
 
     .block, .confirmation{
         transform-origin: bottom left;
-        transition: transform 0.2s 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275), max-height 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), max-width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.06), opacity 1.2s 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275), padding 0.2s 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition:
+            all var(--smooth-transition),
+            transform 0.2s 0.05s var(--smooth-bezier),
+            padding 0.2s 0.05s var(--smooth-bezier),
+            opacity 1.2s 0.05s var(--smooth-bezier);
     }
 }
 body, .global{
-    transition: background 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: background 0.2s var(--smooth-bezier);
 }
 .global.menu-open{
     background: black;

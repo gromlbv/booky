@@ -1,17 +1,7 @@
 $(document).ready(function() {    
     let currentYear = window.calendarData.year;
     let currentMonth = window.calendarData.month;
-    
-    function updateConfirmBlock(date, time) {
-        if (date) {
-            $('#confirm-date').text(date);
-            $('#hidden-date').val(date);
-        }
-        if (time) {
-            $('#confirm-time').html(time);
-            $('#hidden-time').val(time);
-        }
-    }
+
     const monthNames = {
         1: 'January', 2: 'February', 3: 'March', 4: 'April', 
         5: 'May', 6: 'June', 7: 'July', 8: 'August', 
@@ -54,6 +44,17 @@ $(document).ready(function() {
         }
     });
 
+    function updateConfirmBlock(date, time, slotId) {
+        if (date) {
+            $('#confirm-date').text(date);
+            $('#hidden-date').val(date);
+        }
+        if (time) {
+            $('#confirm-time').html(time);
+            $('#hidden-slot-id').val(slotId);
+        }
+    }
+
     function showTimeBlockButton(){
         $('#time-block-next p').removeClass('visible');
         $('#time-block-next button').addClass('visible');
@@ -86,7 +87,7 @@ $(document).ready(function() {
         hideTimeBlockButton();
 
         const date = $(this).data('date');
-        updateConfirmBlock(date, '');
+        updateConfirmBlock(date, '', '');
 
         console.log('Selected date:', $(this).data('date'));
         
@@ -109,7 +110,7 @@ $(document).ready(function() {
         
         const selectedDate = $('.day.selected').data('date');
         const timeText = `${start}<br>${end}`;
-        updateConfirmBlock(selectedDate, timeText);
+        updateConfirmBlock(selectedDate, timeText, slotId);
         
         console.log('Selected time slot:', slotId, start, '-', end);
     });
@@ -131,16 +132,16 @@ $(document).ready(function() {
         e.preventDefault();
         
         const date = $('#hidden-date').val();
-        const time = $('#hidden-time').val();
+        const slot_id = $('#hidden-slot-id').val();
         
-        if (!date || !time) {
+        if (!date || !slot_id) {
             alert('Please select date and time first');
             return false;
         }
         
         console.log('Form data:', {
             date: date,
-            time: time,
+            slot_id: slot_id,
             name: $('#name').val(),
             email: $('#email').val(),
             services: $('#services').val(),
