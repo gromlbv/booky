@@ -11,7 +11,7 @@ celery_app = Celery('mail_service', broker='redis://localhost:6379/0')
 celery_app.conf.update(
     task_always_eager=False,
     worker_pool_restarts=True,
-    worker_pool='solo'
+    worker_pool='prefork'
 )
 
 SMTPserver =   'smtp.gmail.com'
