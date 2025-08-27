@@ -11,7 +11,7 @@ celery_app = Celery('mail_service', broker='redis://localhost:6379/0')
 celery_app.conf.update(
     task_always_eager=False,
     worker_pool_restarts=True,
-    worker_pool='prefork'
+    worker_pool='solo'
 )
 
 SMTPserver =   'smtp.gmail.com'
@@ -30,7 +30,7 @@ def send_mail(destination, msg_content, sub):
     msg['Subject'] = sub
     msg['From'] = SENDER
     
-    conn = SMTP(SMTPserver, PORT)
+    conn = SMTP(SMTPserver, PORT, timeout=30)
     conn.set_debuglevel(False)
     conn.login(USERNAME, PASSWORD or 'nopass')
     try:
