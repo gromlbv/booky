@@ -31,7 +31,7 @@ def send_mail(destination, msg_content, sub):
     msg['From'] = SENDER
     
     conn = SMTP(SMTPserver, PORT)
-    conn.set_debuglevel(True)
+    conn.set_debuglevel(False)
     conn.login(USERNAME, PASSWORD or 'nopass')
     try:
         conn.sendmail(SENDER, destination, msg.as_string())
