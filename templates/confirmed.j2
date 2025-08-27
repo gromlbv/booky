@@ -29,9 +29,9 @@
 </div>
 
 <div class="flex flex-wrap align-center gap-4">
-    <button class="default bg-2" id="add-to-calendar" type="button">
+    <a href="/meet/{{ meeting_request.id }}/get_event" class="default bg-2" id="add-to-calendar" type="button">
         Add to calendar
-    </button>
+    </a>
     <button class="default no-bg danger" id="cancel-meeting" type="button" hx-get="/api/cancel/{{ meeting_request.id }}" hx-swap="innerHTML">
         Cancel Meeting
     </button>
@@ -41,16 +41,19 @@
 </div>
 
 <script>
-document.addEventListener('htmx:afterRequest', function(event) {
-    if (event.detail.xhr.status === 200) {
-        const response = event.detail.xhr.responseText;
-        if (response.includes('cancelled')) {
-            setTimeout(function() {
-                window.location.href = '/';
-            }, 2000);
+    document.addEventListener('htmx:afterRequest', function(event) {
+        if (event.detail.xhr.status === 200) {
+            const response = event.detail.xhr.responseText;
+            if (response.includes('cancelled')) {
+                setTimeout(function() {
+                    window.location.href = '/';
+                }, 2000);
+            }
         }
-    }
-});
+    });
+    $('#resend-code').on('click', function() {
+        this.innerHTML = 'Resending...';
+    });
 </script>
 
 {% endblock content %}

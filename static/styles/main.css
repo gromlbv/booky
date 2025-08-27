@@ -193,6 +193,7 @@ a, button{
     border: none;
     background: none;
     color: var(--secondary-color);
+    text-decoration: none;
 
     cursor: pointer;
 
@@ -899,10 +900,11 @@ body.menu-open{
 }
 @media (max-width: 640px) {
     .wrapper{
-        padding: 0;
+        padding: 12px !important;
+        box-sizing: border-box;
     }
     .block{
-        width: 100vw;
+        width: 100%;
         max-width: none !important;
     }
     .block.date{

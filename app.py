@@ -1,10 +1,10 @@
 from flask import Flask
 from flask import render_template, session, request, flash, redirect, jsonify, url_for, send_from_directory
-
-from utils import json_response
+import os
 
 import mydb as db
 
+from utils import json_response, format_time, format_date
 from mysecurity import verify, decode
 from models import create_app, create_tables, TimeSpan, CalendarDay, MeetingRequest
 from mail_service import send_code, send_report
@@ -12,16 +12,19 @@ from mail_service import send_code, send_report
 import redis
 import random
 
-
 from functools import wraps
 from datetime import datetime
 from env_service import getenv
+
+from ics_service.service import create_event
+
 
 app = Flask(__name__)
 create_app(app)
 
 with app.app_context():
     create_tables()
+
 
 app.secret_key = getenv('SECRET_KEY')
 
@@ -32,7 +35,7 @@ class ReturnTemplate:
     def __init__(self, name=''):
         self.name = name
     def __call__(self, **kwds) -> str:
-        return render_template(f"{self.name}.j2", **kwds, request=request, hello="qqqqqq")
+        return render_template(f"{self.name}.j2", **kwds, request=request)
     def __getattr__(self, name):
         return ReturnTemplate(self.name + '/' + name)
     
@@ -108,7 +111,7 @@ def report_post():
 
 
 @app.post('/submit')
-def send_code_post():
+def submit_post():
     email = request.form.get('email')
     name = request.form.get('name')
     service = request.form.get('service')
@@ -119,7 +122,7 @@ def send_code_post():
     if not email or not name or not date or not slot_id:
         return 'Not all fields are filled or something went wrong'
 
-    time_span = TimeSpan.query.get(slot_id)
+    time_span = TimeSpan.query.filter_by(id=int(slot_id)).first()
     if not time_span:
         return 'Time slot not found'
 
@@ -143,36 +146,41 @@ def send_code_post():
     database.session.commit()
 
     
-    start_time = f"{time_span.start // 60:02d}:{time_span.start % 60:02d}"
-    end_time = f"{time_span.end // 60:02d}:{time_span.end % 60:02d}"
+    start_time = format_time(time_span.start)
+    end_time = format_time(time_span.end)
 
-    send_code(email, name, service, message, date, start_time, end_time, code)
+    session['meeting_request_id'] = meeting_request.id
+
+    send_code(
+        destination=email,
+        name=name,
+        service=service,
+        message=message,
+        date=date,
+        start_time=start_time,
+        end_time=end_time,
+        code=code)
     
     return redirect(url_for('confirmed', id=meeting_request.id))
 
 
 @app.route('/meet/<id>')
 def confirmed(id):
-    meeting_request = MeetingRequest.query.get(id)
+    meeting_request = MeetingRequest.query.filter_by(id=id).first()
     if not meeting_request:
         session_meeting_request_id = session.get('meeting_request_id', None)
         if session_meeting_request_id == id:
             session.pop('meeting_request_id', None)
         return 'Meeting request not found'
 
-
-    time_span = meeting_request.time_span
     date = meeting_request.calendar_day.date
-    start_time = time_span.start
-    end_time = time_span.end
+    start_time = meeting_request.time_span.start
+    end_time = meeting_request.time_span.end
 
-    #conversion to 'june 15, 2025'
-    date = date.strftime('%B %d, %Y')
-    #conversion to '09:30'
-    start_time = f"{start_time // 60:02d}:{start_time % 60:02d}"
-    end_time = f"{end_time // 60:02d}:{end_time % 60:02d}"
+    date = format_date(date)
+    start_time = format_time(start_time)
+    end_time = format_time(end_time)
 
-    session['meeting_request_id'] = meeting_request.id
     return R.confirmed(meeting_request=meeting_request, date=date, start_time=start_time, end_time=end_time)
 
 
@@ -198,9 +206,9 @@ def resend_code(id):
     if not meeting_request:
         return 'Meeting request not found', 400
 
-    date = meeting_request.calendar_day.date
-    start_time = meeting_request.time_span.start
-    end_time = meeting_request.time_span.end
+    date = format_date(meeting_request.calendar_day.date)
+    start_time = format_time(meeting_request.time_span.start)
+    end_time = format_time(meeting_request.time_span.end)
 
     send_code(meeting_request.email, meeting_request.meet_code, meeting_request.name, meeting_request.service, meeting_request.message, date, start_time, end_time)
     return 'Mail resent!'
@@ -213,7 +221,7 @@ def available_slots():
     else:
         return "<p>Choose a date</p>"
     
-    day_of_week = DayOfWeek.query.get(dow + 1)
+    day_of_week = DayOfWeek.query.filter_by(id=dow + 1).first()
     if not day_of_week or not day_of_week.is_working:
         return "<p>No working slots this day</p>"
 
@@ -224,11 +232,9 @@ def available_slots():
 
     html = "<ul>"
     for span in time_spans:
-        start_h = span.start // 60
-        start_m = span.start % 60
-        end_h = span.end // 60
-        end_m = span.end % 60
-        html += f"<li>{start_h:02}:{start_m:02} – {end_h:02}:{end_m:02}</li>"
+        start_time = format_time(span.start)
+        end_time = format_time(span.end)
+        html += f"<li>{start_time} – {end_time}</li>"
     html += "</ul>"
 
     return html
@@ -239,7 +245,7 @@ def get_time_slots(date):
         date_obj = datetime.strptime(date, "%Y-%m-%d")
         dow = date_obj.weekday()
         
-        day_of_week = DayOfWeek.query.get(dow + 1)
+        day_of_week = DayOfWeek.query.filter_by(id=dow + 1).first()
         if not day_of_week or not day_of_week.is_working:
             return f'''
                 <p>Then, select a time period for <span>{date}</span></p>
@@ -314,7 +320,7 @@ def get_calendar(year, month):
                 date_obj = datetime(year, month, day)
                 dow = date_obj.weekday()
                 
-                day_of_week = DayOfWeek.query.get(dow + 1)
+                day_of_week = DayOfWeek.query.filter_by(id=dow + 1).first()
                 is_available = day_of_week and day_of_week.is_working
                 
                 is_today = is_current_month and today.day == day
@@ -389,6 +395,25 @@ def init_spans():
     database.session.commit()
 
     return "<span class='post-result' id='span-status'>DONE</span>"
+
+
+
+# CALENDAR
+
+@app.get('/meet/<id>/get_event')
+def get_event(id):
+    meeting_request = MeetingRequest.query.filter_by(id=id).first()
+    if not meeting_request:
+        return 'Meeting request not found', 400
+    
+    file_path = f'ics_service/events/{id}.ics'
+    if not os.path.exists(file_path):
+        create_event(meeting_request)
+    
+    return send_from_directory(
+        directory='ics_service/events',
+        path=f'{id}.ics'
+    )
 
 
 
