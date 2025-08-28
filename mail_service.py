@@ -3,16 +3,14 @@ import asyncio
 
 from smtplib import SMTP_SSL as SMTP
 from email.mime.text import MIMEText
-from celery import Celery
 from env_service import getenv
+from celery import Celery
+from celery_config import CELERY_CONFIG
 
 
 celery_app = Celery('mail_service', broker='redis://localhost:6379/0')
-celery_app.conf.update(
-    task_always_eager=False,
-    worker_pool_restarts=True,
-    worker_pool='solo'
-)
+celery_app.conf.update(CELERY_CONFIG)
+
 
 SMTPserver =   'smtp.gmail.com'
 PORT =         465
