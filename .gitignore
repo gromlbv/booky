@@ -1,3 +1,6 @@
+# Configs
+celery_config.py
+
 # Database
 ics_service/events/
 
