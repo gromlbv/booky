@@ -348,6 +348,17 @@ input, select, textarea{
 
     transition: outline 0.2s;
 }
+select.transparent{
+    background-color: transparent;
+    color: var(--subtle-color);
+    padding: 4px;
+    margin-left: -8px;
+}
+option{
+    background-color: var(--background-3-color);
+    color: var(--secondary-color) !important;
+    border-radius: 12px;
+}
 textarea{
     resize: vertical;
     min-height: 1.5rem;
@@ -449,6 +460,10 @@ header{
         grid-template-columns: repeat(7, 1fr);
         gap: 8px;
     }
+    .days.htmx-request{
+        cursor: progress;
+
+    }
 
     .day {
         aspect-ratio: 1;
@@ -485,6 +500,26 @@ header{
         background-color: var(--accent-color);
     }
 
+    .day.loading{
+        background-color: var(--tertiary-color);
+        color: transparent !important;
+
+        opacity: 0.4;
+
+        cursor: progress;
+    }
+    @keyframes day-loading-mask {
+        0% {
+            scale: 0.95 !important;
+        }
+        50% {
+            scale: 1.05 !important;
+        }
+        100% {
+            scale: 1.05 !important;
+        }
+    }
+
     .day.empty {
         cursor: default;
     }
@@ -497,7 +532,7 @@ header{
     display: flex;
     flex-direction: column;
 
-    max-width: 670px;
+    max-width: 760px;
     max-height: 100vh;
     width: 100vw;
     padding: 20px;

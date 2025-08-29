@@ -45,10 +45,16 @@
     
     <div class="days" 
          hx-get="/api/calendar/{{ year }}/{{ month }}" 
-         hx-trigger="load, calendarNav from:body"
+         hx-trigger="load, calendarNav from:body, day:click"
          hx-target="this"
          hx-swap="innerHTML">
-        <div class="loading">Fetching calendar...</div>
+            {% for i in range(30) %}
+                {% if i == 0 or i == 1 %}
+                    <button class="day empty" disabled></button>
+                {% else %}
+                    <button class="day loading" disabled>{{ i - 1 }}</button>
+                {% endif %}
+            {% endfor %}
     </div>
 </div>
 

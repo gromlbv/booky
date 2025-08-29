@@ -96,10 +96,6 @@ def index():
 def debug():
     return R.debug()
 
-@app.get('/admin')
-def admin():
-    return R.admin()
-
 @app.get('/report')
 def report():
     return R.report()
@@ -298,18 +294,15 @@ def get_time_slots(date):
     except ValueError:
         return "<p>Select date to continue</p>"
 
+
 @app.route("/api/calendar/<int:year>/<int:month>")
-def get_calendar(year, month):    
-    print(f"get_calendar called with year={year}, month={month}")
-    
+def get_calendar(year, month):        
     cal = calendar.monthcalendar(year, month)
     
     today = datetime.now()
     is_current_month = today.year == year and today.month == month
     
     html = ""
-
-    print(f"Calendar data: {cal}")
     
     for week in cal:
         for day in week:
@@ -362,10 +355,46 @@ def get_date_availabiltiy(date_str):
 
 
 
+# CALENDAR
+
+
+@app.get('/meet/<id>/get_event')
+def get_event(id):
+    meeting_request = MeetingRequest.query.filter_by(id=id).first()
+    if not meeting_request:
+        return 'Meeting request not found', 400
+    
+    file_path = f'ics_service/events/{id}.ics'
+    if not os.path.exists(file_path):
+        create_event(meeting_request)
+    
+    return send_from_directory(
+        directory='ics_service/events',
+        path=f'{id}.ics'
+    )
+
+
+
 # ADMIN
 
-@app.post("/api/init/all",)
+admin_key = getenv('ADMIN_KEY')
+admin_session_key = getenv('ADMIN_SESSION_KEY')
+
+@app.get('/admin/<key>')
+def admin(key):
+    if key != admin_key:
+        return 'Access denied', 403
+    
+    session['admin_session_key'] = admin_session_key
+
+    return R.admin()
+
+
+@app.post("/api/init/all")
 def init_all():
+    if 'admin_session_key' not in session:
+        return "ADMIN KEY ERROR"
+    
     db.init_all()
     return "DONE"
 
@@ -374,6 +403,9 @@ from models import db as database
 
 @app.post("/api/init/spans")
 def init_spans():
+    if 'admin_session_key' not in session:
+        return "ADMIN KEY ERROR"
+    
     size = int(request.form.get("span_size", 30))
     start = int(request.form.get("start_time", 0))
     end = int(request.form.get("end_time", 24))
@@ -398,26 +430,7 @@ def init_spans():
 
 
 
-# CALENDAR
-
-@app.get('/meet/<id>/get_event')
-def get_event(id):
-    meeting_request = MeetingRequest.query.filter_by(id=id).first()
-    if not meeting_request:
-        return 'Meeting request not found', 400
-    
-    file_path = f'ics_service/events/{id}.ics'
-    if not os.path.exists(file_path):
-        create_event(meeting_request)
-    
-    return send_from_directory(
-        directory='ics_service/events',
-        path=f'{id}.ics'
-    )
-
-
-
 if __name__ == "__main__":
     with app.app_context():
         create_tables()
-    app.run(debug=True, port=5200, host='0.0.0.0')
+    app.run(debug=True, port=5300, host='0.0.0.0')
