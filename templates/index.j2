@@ -32,11 +32,11 @@
     <header class="flex-between w-100">
         {% block back_button %}
         <a class="no-fill circle" href="https://seniwave.com" data-description="Back to SeniWave">
-            <svg xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L6.75 13" stroke="white" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="secondary-color" xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L6.75 13" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
         {% endblock back_button %}
         <button class="no-fill circle toggle-menu" data-description="Menu">
-            <svg class="secondary-color" xmlns="http://www.w3.org/2000/svg" width="26" height="18" viewBox="0 0 26 18" fill="none"><path d="M1 1H25M1 17H25M1 9H25" stroke="white" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="secondary-color" xmlns="http://www.w3.org/2000/svg" width="26" height="18" viewBox="0 0 26 18" fill="none"><path d="M1 1H25M1 17H25M1 9H25" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
     </header>
     
@@ -52,7 +52,7 @@
                 {{ details_block() }}
                 <button class="accent" type="submit">
                     Confirm
-                    <svg class="secondary-color" xmlns="http://www.w3.org/2000/svg" width="17" height="14" viewBox="0 0 17 14" fill="none"><path d="M1.5 7.45833C3.6875 8.83333 4.85841 10.0953 6.16667 12.5C7.625 8.83333 11.125 3.33333 15.5 1.5" stroke="#EFEFEF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <svg class="contrast-to-accent" xmlns="http://www.w3.org/2000/svg" width="17" height="14" viewBox="0 0 17 14" fill="none"><path d="M1.5 7.45833C3.6875 8.83333 4.85841 10.0953 6.16667 12.5C7.625 8.83333 11.125 3.33333 15.5 1.5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
             </form>
             {% endblock content %}

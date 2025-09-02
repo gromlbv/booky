@@ -50,7 +50,7 @@ def create_event(meeting_request):
     return c
 
 def save_event_to_file(event, filename):
-    os.makedirs('ics_files', exist_ok=True)
+    os.makedirs('ics_service/events', exist_ok=True)
     filepath = os.path.join('ics_service/events', filename)
     with open(filepath, 'w', encoding='utf-8') as my_file:
         my_file.writelines(event.serialize_iter())

@@ -1,4 +1,5 @@
 {% macro menu_view() %}
+
 <div class="menu flex-cl justify-between">
 	<div class="flex-cl gap-32">
 		<div class="flex-cl">
@@ -10,28 +11,136 @@
 			<a class="toggle-menu" href="/report"><span>Found a bug?</span> — Report</a>
 		</div>
 	</div>
-	<div class="flex gap-12 align-center">
-		<div class="flex-cl">
-			<h3>SeniWave</h3>
-			<p>Let's find a time to meet!</p>
+	<div class="flex-cl gap-24 align-end">
+		<div class="theme-toggle">
+			<input type="checkbox" id="theme-switch" class="theme-switch">
+			<label for="theme-switch" class="theme-switch-label">
+				<svg class="theme-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.6526 1.46584C8.6526 1.10514 8.35995 0.8125 7.99926 0.8125C7.63856 0.8125 7.34592 1.10514 7.34592 1.46584V3.32586C7.55962 3.29592 7.7774 3.28094 7.99926 3.28094C8.22112 3.28094 8.4389 3.29592 8.6526 3.32586V1.46584ZM3.84174 2.91748L5.15659 4.23301C4.80747 4.49639 4.49644 4.80741 4.23307 5.15654L2.91753 3.84169C2.66233 3.58648 2.66233 3.1727 2.91753 2.91748C3.17274 2.66228 3.58652 2.66228 3.84174 2.91748ZM1.46584 7.34592H3.32586C3.29592 7.55962 3.28094 7.7774 3.28094 7.99926C3.28094 8.22112 3.29592 8.4389 3.32586 8.6526H1.46584C1.10514 8.6526 0.8125 8.35995 0.8125 7.99926C0.8125 7.63856 1.10514 7.34592 1.46584 7.34592ZM2.91748 12.1568L4.23233 10.8419C4.49639 11.191 4.80741 11.5021 5.15654 11.7661L3.84169 13.081C3.58648 13.3362 3.1727 13.3362 2.91748 13.081C2.66228 12.8258 2.66228 12.412 2.91748 12.1568ZM7.34592 14.5327V12.6727C7.55962 12.7026 7.7774 12.7176 7.99926 12.7176C8.22112 12.7176 8.4389 12.7026 8.6526 12.6727V14.5327C8.6526 14.8934 8.35995 15.186 7.99926 15.186C7.63856 15.186 7.34592 14.8934 7.34592 14.5327ZM12.1568 13.081L10.8419 11.7662C11.191 11.5021 11.5021 11.1911 11.7661 10.842L13.081 12.1568C13.3362 12.412 13.3362 12.8258 13.081 13.081C12.8258 13.3362 12.412 13.3362 12.1568 13.081ZM14.5327 8.6526H12.6727C12.7026 8.4389 12.7176 8.22112 12.7176 7.99926C12.7176 7.7774 12.7026 7.55962 12.6727 7.34592H14.5327C14.8934 7.34592 15.186 7.63856 15.186 7.99926C15.186 8.35995 14.8934 8.6526 14.5327 8.6526ZM13.081 3.84174L11.7655 5.15659C11.5021 4.80747 11.1911 4.49644 10.842 4.23239L12.1568 2.91753C12.412 2.66233 12.8258 2.66233 13.081 2.91753C13.3362 3.17274 13.3362 3.58652 13.081 3.84174ZM4.73255 7.99926C4.73255 6.19516 6.19508 4.73255 7.99926 4.73255C9.80344 4.73255 11.266 6.19508 11.266 7.99926C11.266 9.80344 9.80344 11.266 7.99926 11.266C6.19508 11.266 4.73255 9.80344 4.73255 7.99926Z" fill="white"/></svg>
+				<span class="theme-slider"></span>
+				<svg class="theme-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.76521 1.35088C5.80401 1.22293 5.7693 1.08411 5.6747 0.989501C5.5801 0.894903 5.44058 0.859514 5.31264 0.898305C2.74963 1.6755 0.882812 4.05612 0.882812 6.87438C0.882812 10.3221 3.6779 13.1172 7.12562 13.1172C9.94388 13.1172 12.3245 11.2504 13.1017 8.68736C13.1405 8.55941 13.1058 8.41989 13.0105 8.3253C12.9159 8.2307 12.7771 8.19599 12.6491 8.23479C12.1421 8.38859 11.6038 8.47095 11.0457 8.47095C7.99888 8.47095 5.52908 6.00114 5.52908 2.9543C5.52908 2.39625 5.6114 1.85789 5.76521 1.35088Z" fill="white"/></svg>
+			</label>
 		</div>
-		<img class="logo-animated" src="/static/logos/default.svg" alt="Purple logo with blue wave">
+		<div class="flex gap-12 align-center">
+			<div class="flex-cl">
+				<h3>SeniWave</h3>
+				<p>Let's find a time to meet!</p>
+			</div>
+			<img class="logo-animated" src="/static/logos/default.svg" alt="Purple logo with blue wave">
+		</div>
 	</div>
 </div>
 
 <script>
     $(document).ready(function() {
-        $('.toggle-menu').click(function() {
-            $('body').toggleClass('menu-open');
-            $('.wrapper').toggleClass('menu-open');
-            $('.global').toggleClass('menu-open');
-            $('.menu').toggleClass('menu-open');
-        });
-        $('.wrapper').click(function() {
+        // Menu functions
+        function openMenu() {
+            $('body').addClass('menu-open');
+            $('.wrapper').addClass('menu-open');
+            $('.global').addClass('menu-open');
+            $('.menu').addClass('menu-open');
+        }
+
+        function closeMenu() {
             $('body').removeClass('menu-open');
             $('.wrapper').removeClass('menu-open');
             $('.global').removeClass('menu-open');
             $('.menu').removeClass('menu-open');
+        }
+
+        function toggleMenu() {
+            if ($('body').hasClass('menu-open')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        }
+
+        $('.toggle-menu').click(function() {
+            toggleMenu();
+        });
+        
+        $('.wrapper').click(function() {
+            closeMenu();
+        });
+
+        let startX = 0;
+        let startY = 0;
+        let endX = 0;
+        let endY = 0;
+        let isDragging = false;
+        const swipeThreshold = 10;
+
+        $('body').on('touchstart', function(e) {
+            startX = e.originalEvent.touches[0].clientX;
+            startY = e.originalEvent.touches[0].clientY;
+            isDragging = false;
+        });
+
+        $('body').on('touchmove', function(e) {
+            if (!startX || !startY) return;
+            
+            const currentX = e.originalEvent.touches[0].clientX;
+            const currentY = e.originalEvent.touches[0].clientY;
+            
+            const deltaX = currentX - startX;
+            const deltaY = currentY - startY;
+            
+            // Check if it's a horizontal swipe and not vertical
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+                isDragging = true;
+                e.preventDefault(); // Prevent scrolling
+                
+                // Only apply transform for left swipe (opening menu)
+                if (deltaX < 0 && !$('body').hasClass('menu-open')) {
+                    const swipeDistance = Math.abs(deltaX);
+                    const maxSwipe = 100; // Maximum transform distance
+                    const transformPercent = Math.min(swipeDistance / maxSwipe, 1);
+                    const translateX = -transformPercent * 20; // Max 20px transform
+                    
+                    $('body').css('transform', `translateX(${translateX}px)`);
+                }
+            }
+        });
+
+        $('body').on('touchend', function(e) {
+            if (!isDragging) return;
+            
+            endX = e.originalEvent.changedTouches[0].clientX;
+            endY = e.originalEvent.changedTouches[0].clientY;
+            
+            const deltaX = endX - startX;
+            const deltaY = endY - startY;
+            
+            // Reset transform
+            $('body').css('transform', '');
+            
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold && Math.abs(deltaY) < 100) {
+                if (deltaX > 0) {
+                    closeMenu();
+                } else {
+                    openMenu();
+                }
+            }
+            
+            // Reset variables
+            startX = 0;
+            startY = 0;
+            endX = 0;
+            endY = 0;
+            isDragging = false;
+        });
+
+        const themeSwitch = document.getElementById('theme-switch');
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        body.setAttribute('data-theme', savedTheme);
+        themeSwitch.checked = savedTheme === 'light';
+
+        themeSwitch.addEventListener('change', function() {
+            const newTheme = this.checked ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
         });
     });
 </script>
