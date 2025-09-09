@@ -1,4 +1,33 @@
-$(document).ready(function() {    
+$(document).ready(function() {
+    function setReturnToEdit() {
+        setBackButton()
+        $('.block.date').removeClass('hidden');
+        showTimeBlockButton();
+        showTimeBlock();
+        hideConfirm();
+    }
+
+    function setBackButton(action='', href='', desc='') {
+        const backButton = $('#back-button');
+
+        if (action == 'redirect' || href) {
+            backButton.attr('href', href)
+            backButton.data('description', desc)
+        }
+        if (action == 'return-to-edit') {
+            backButton.attr('href', '#')
+            backButton.data('description', 'Return to edit')
+            $(backButton).on('click', function (e) {
+                e.preventDefault();
+                setReturnToEdit();
+            });
+        }
+        else {
+            backButton.attr('href', 'https://seniwave.com')
+            backButton.data('description', 'Back to SeniWave')
+        }
+    }
+
     let currentYear = window.calendarData.year;
     let currentMonth = window.calendarData.month;
 
@@ -34,13 +63,13 @@ $(document).ready(function() {
             
             if (typeof htmx !== 'undefined') {
                 htmx.trigger(daysContainer[0], 'calendarNav');
-                console.log('HTMX trigger sent');
+                //console.log('htmx trigger sent');
             } else {
                 daysContainer.load(`/api/calendar/${currentYear}/${currentMonth}`);
-                console.log('Fallback load used');
+                //console.log('fallback');
             }
         } else {
-            console.error('Days container not found!');
+            //console.error('days container not found');
         }
     });
 
@@ -89,7 +118,7 @@ $(document).ready(function() {
         const date = $(this).data('date');
         updateConfirmBlock(date, '', '');
 
-        console.log('Selected date:', $(this).data('date'));
+        //console.log('Selected date:', $(this).data('date'));
         
         const timeBlock = $('#time-block');
         if (timeBlock.length > 0) {
@@ -112,20 +141,19 @@ $(document).ready(function() {
         const timeText = `${start}<br>${end}`;
         updateConfirmBlock(selectedDate, timeText, slotId);
         
-        console.log('Selected time slot:', slotId, start, '-', end);
+        // console.log('Selected time slot:', slotId, start, '-', end);
     });
 
     $(document).on('click', '#time-block-next button', function() {
+        setBackButton(action='return-to-edit')
         $('.block.date').addClass('hidden');
         hideTimeBlock()
         showConfirm()
     });
 
+
     $(document).on('click', '#return-to-edit', function() {
-        $('.block.date').removeClass('hidden');
-        showTimeBlockButton();
-        showTimeBlock();
-        hideConfirm();
+        setReturnToEdit()
     });
 
     $(document).on('submit', '.confirmation', function(e) {
@@ -139,7 +167,7 @@ $(document).ready(function() {
             return false;
         }
         
-        console.log('Form data:', {
+         console.log('Form data:', {
             date: date,
             slot_id: slot_id,
             name: $('#name').val(),

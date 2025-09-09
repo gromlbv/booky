@@ -47,6 +47,8 @@ body[data-theme="dark"] {
     --background-1-color: #101010;
     --background-2-color: #1E1E1E;
     --background-3-color: #303030;
+
+    --input-background-color: #101010;
 }
 
 body[data-theme="light"] {
@@ -58,6 +60,8 @@ body[data-theme="light"] {
     --background-1-color: #D5BDFA;
     --background-2-color: #FFFFFF;
     --background-3-color: #FAFAFA;
+
+    --input-background-color: #FFFFFF;
 }
 
 
@@ -401,8 +405,12 @@ header{
 
     z-index: 60;
 
+    pointer-events: none;
     box-sizing: border-box;
     transition: background-color 0s;
+}
+header *{
+    pointer-events: initial;
 }
 
 .calendar{
@@ -691,6 +699,7 @@ header{
     align-items: center;
 
     width: 100%;
+    margin-top: -120px;
 
     transition: max-height 0.2s, opacity 0.2s, transform 0.4s !important;
 }

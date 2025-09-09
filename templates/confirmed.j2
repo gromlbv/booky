@@ -13,12 +13,12 @@
                 <button class="no-fill circle" data-description="Meet booked successfully">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" fill="none"><path d="M1 7.45833C3.1875 8.83333 4.35841 10.0953 5.66667 12.5C7.125 8.83333 10.625 3.33333 15 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
-
                 {% endif %}
             </div>
             <div class="flex-cl">
                 <p>30 min</p>
                 <p>Online Meeting</p>
+                {{ meeting_request.services }}
             </div>
         </div>
         <div class="right-side flex-cl flex-between align-end">

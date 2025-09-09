@@ -45,17 +45,17 @@ def send_mail(destination, msg_content, sub):
 class MailUser:
     name = ''
     email = ''
-    service = ''
+    services = ''
     message = ''
     date = ''
     start_time = ''
     end_time = ''
     code = ''
 
-    def __init__(self, email, name, service, message, date, start_time, end_time, code):
+    def __init__(self, email, name, services, message, date, start_time, end_time, code):
         self.name = name
         self.email = email
-        self.service = service
+        self.services = services
         self.message = message
         self.date = date
         self.start_time = start_time
@@ -87,13 +87,16 @@ def send_code(user):
     letter = f"""\
     <h1>Hello, {user.name}!</h1>
     <p>This is a test message from SeniWave</p>
+    <hr style="opacity: 0.2;">
+    
+    <p>Your code is <b>{user.code}</b></p>
+    <a href="https://meet.seniwave.com/rooms/{user.code}" style="margin-top: 18px; color: #ffffff; text-decoration: none; background-color: #5f00ff; padding: 10px 20px; border-radius: 24px; display: inline-block;" font-size="18px">Join meeting</a>
+
+    <hr style="opacity: 0.2">
     <p>Date: {user.date}</p>
     <p>Time: {user.start_time} - {user.end_time}</p>
-    <p>Service: {user.service}</p>
+    <p>Services: {user.services}</p>
     <p>Message: {user.message}</p>
-    <p>Your code is <b>{user.code}</b></p>
-    <hr style="opacity: 0.2;">
-    <a href="https://meet.seniwave.com/rooms/{user.code}" style="margin-top: 18px; color: #ffffff; text-decoration: none; background-color: #5f00ff; padding: 10px 20px; border-radius: 24px; display: inline-block;" font-size="18px">Join meeting</a>
     """
 
     send_mail.delay(destination, letter, subject) # type: ignore
@@ -122,5 +125,5 @@ def send_report(user):
     <p>Message: {user.message}</p>
     """
 
-    send_mail.delay(destination, letter, subject) # type: ignore
+    send_mail.delay(destination, letter, subject) # `type:` ignore
     send_report_copy(user)

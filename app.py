@@ -1,16 +1,15 @@
 from flask import Flask
-from flask import render_template, session, request, flash, redirect, jsonify, url_for, send_from_directory
+from flask import render_template, session, request, redirect, url_for, send_from_directory
 import os
 
 import mydb as db
 
 from utils import json_response, format_time, format_date
-from mysecurity import verify, decode
+from mysecurity import verify
 from models import create_app, create_tables, TimeSpan, CalendarDay, MeetingRequest
 from mail_service import MailUser, MailReport
 
 import redis
-import random
 
 from functools import wraps
 from datetime import datetime
@@ -24,7 +23,6 @@ create_app(app)
 
 with app.app_context():
     create_tables()
-
 
 app.secret_key = getenv('SECRET_KEY')
 
@@ -111,7 +109,7 @@ def report_post():
 def submit_post():
     email = request.form.get('email')
     name = request.form.get('name')
-    service = request.form.get('service')
+    services = request.form.get('services')
     message = request.form.get('message')
     date = request.form.get('date')
     slot_id = request.form.get('slot_id')
@@ -132,7 +130,7 @@ def submit_post():
     meeting_request = MeetingRequest(
         name=name, 
         email=email,
-        service=service,
+        services=services,
         message=message,
         time_span=time_span,
         calendar_day=calendar_day
@@ -151,7 +149,7 @@ def submit_post():
     mail_user = MailUser(
         email=email,
         name=name,
-        service=service,
+        services=services,
         message=message,
         date=date,
         start_time=start_time,
@@ -439,6 +437,4 @@ def init_spans():
 
 
 if __name__ == "__main__":
-    with app.app_context():
-        create_tables()
     app.run(debug=True, port=5300, host='0.0.0.0')

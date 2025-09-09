@@ -2,6 +2,8 @@
 {% from 'components/time_block.j2' import time_block %}
 {% from 'components/confirm_block.j2' import confirm_block %}
 {% from 'components/details_block.j2' import details_block %}
+{% from 'components/tooltip/actions.j2' import tooltip_actions %}
+{% from 'components/tooltip/services.j2' import tooltip_services %}
 {% from 'components/menu_view.j2' import menu_view %}
 
 <!DOCTYPE html>
@@ -31,7 +33,7 @@
 <body>
     <header class="flex-between w-100">
         {% block back_button %}
-        <a class="no-fill circle" href="https://seniwave.com" data-description="Back to SeniWave">
+        <a id="back-button" class="no-fill circle" href="https://seniwave.com" data-description="Back to SeniWave">
             <svg class="secondary-color" xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L6.75 13" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
         {% endblock back_button %}
@@ -41,6 +43,8 @@
     </header>
     
     <div class="global">
+        {{ tooltip_actions() }}
+        {{ tooltip_services() }}
         <div class="wrapper">
             {% block content %}
             {{ date_block() }}

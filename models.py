@@ -89,7 +89,7 @@ class MeetingRequest(db.Model):
 
     name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
-    service = db.Column(db.String)
+    services = db.Column(db.String)
     message = db.Column(db.String)
 
     timespan_id = db.Column(db.Integer, db.ForeignKey('time_spans.id'), nullable=False)
@@ -100,10 +100,10 @@ class MeetingRequest(db.Model):
 
     meet_code = db.Column(db.Integer)
 
-    def __init__(self, name, email, service, message, time_span, calendar_day):
+    def __init__(self, name, email, services, message, time_span, calendar_day):
         self.name = name
         self.email = email
-        self.service = service
+        self.services = services
         self.message = message
         self.time_span = time_span
         self.calendar_day = calendar_day
