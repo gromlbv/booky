@@ -104,6 +104,10 @@ def report_post():
     mail_report.send_report()
     return 'OK'
 
+@app.get('/support')
+def support():
+    return redirect('https://seniwave.com/contact')
+
 
 @app.post('/submit')
 def submit_post():
