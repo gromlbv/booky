@@ -7,24 +7,25 @@ $(document).ready(function() {
         hideConfirm();
     }
 
-    function setBackButton(action='', href='', desc='') {
+    function setBackButton(action='', href='', desc='', arrow='') {
         const backButton = $('#back-button');
+        backButton.removeClass('arrow-top')
+            .off('click');
 
         if (action == 'redirect' || href) {
             backButton.attr('href', href)
-            backButton.data('description', desc)
-        }
-        if (action == 'return-to-edit') {
-            backButton.attr('href', '#')
-            backButton.data('description', 'Return to edit')
-            $(backButton).on('click', function (e) {
-                e.preventDefault();
-                setReturnToEdit();
-            });
-        }
-        else {
+                .data('description', desc)
+        } else if (action == 'return-to-edit') {
+            backButton.addClass('arrow-top')
+                .attr('href', '#')
+                .data('description', 'Return to edit')
+                .on('click', function (e) {
+                    e.preventDefault();
+                    setReturnToEdit();
+                });
+        } else {
             backButton.attr('href', 'https://seniwave.com')
-            backButton.data('description', 'Back to SeniWave')
+                .data('description', 'Back to SeniWave')
         }
     }
 

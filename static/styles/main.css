@@ -232,6 +232,9 @@ a:disabled, button:disabled{
 
 /* svg */
 
+svg{
+    transition: transform var(--smooth-transition);
+}
 svg.secondary-color{
     path{
         stroke: var(--secondary-color) !important;
@@ -411,6 +414,12 @@ header{
 }
 header *{
     pointer-events: initial;
+}
+
+#back-button.arrow-top{
+    svg{
+        transform: rotate(90deg);
+    }
 }
 
 .calendar{
