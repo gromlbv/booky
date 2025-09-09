@@ -52,10 +52,10 @@ body[data-theme="dark"] {
 body[data-theme="light"] {
     --primary-color: #1E1E1E;
     --secondary-color: rgba(30, 30, 30, 0.5);
-    --subtle-color: rgba(30, 30, 30, 0.24);
+    --subtle-color: rgba(30, 30, 30, 0.32);
     --tertiary-color: rgba(30, 30, 30, 0.08);
 
-    --background-1-color: #F7F2FF;
+    --background-1-color: #D5BDFA;
     --background-2-color: #FFFFFF;
     --background-3-color: #FAFAFA;
 }
@@ -817,7 +817,6 @@ body, .global{
 body.menu-open{
     background: black;
     header{
-
         background-color: transparent;
     
         *{
@@ -835,10 +834,13 @@ body.menu-open{
     border-bottom-right-radius: 12px;
 
     cursor: pointer;
-
-    .block{
-        transform: scale(0.8);
-    }
+}
+.wrapper > * {
+    transition: transform 0.2s var(--smooth-bezier);
+}
+.wrapper.menu-open > * {
+    transform-origin: bottom left;
+    transform: scale(0.8);
 }
 .wrapper.menu-open:hover::after{
     content: '';

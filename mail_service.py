@@ -42,24 +42,64 @@ def send_mail(destination, msg_content, sub):
         conn.quit()
 
 
-def send_code(destination, code, name, service, message, date, start_time, end_time):
+class MailUser:
+    name = ''
+    email = ''
+    service = ''
+    message = ''
+    date = ''
+    start_time = ''
+    end_time = ''
+    code = ''
+
+    def __init__(self, email, name, service, message, date, start_time, end_time, code):
+        self.name = name
+        self.email = email
+        self.service = service
+        self.message = message
+        self.date = date
+        self.start_time = start_time
+        self.end_time = end_time
+        self.code = code
+
+    def send_code(self):
+        send_code(MailUser)
+
+
+class MailReport:
+    name = ''
+    email = ''
+    message = ''
+
+    def __init__(self, name, email, message):
+        self.name = name
+        self.email = email
+        self.message = message
+
+    def send_report(self):
+        send_report(MailReport)
+
+
+
+def send_code(user):
+    destination = user.email
     subject = 'Your Meeting Code'
     letter = f"""\
-    <h1>Hello, {name}!</h1>
+    <h1>Hello, {user.name}!</h1>
     <p>This is a test message from SeniWave</p>
-    <p>Date: {date}</p>
-    <p>Time: {start_time} - {end_time}</p>
-    <p>Service: {service}</p>
-    <p>Message: {message}</p>
-    <p>Your code is <b>{code}</b></p>
+    <p>Date: {user.date}</p>
+    <p>Time: {user.start_time} - {user.end_time}</p>
+    <p>Service: {user.service}</p>
+    <p>Message: {user.message}</p>
+    <p>Your code is <b>{user.code}</b></p>
     <hr style="opacity: 0.2;">
-    <a href="https://meet.seniwave.com/rooms/{code}" style="margin-top: 18px; color: #ffffff; text-decoration: none; background-color: #5f00ff; padding: 10px 20px; border-radius: 24px; display: inline-block;" font-size="18px">Join meeting</a>
+    <a href="https://meet.seniwave.com/rooms/{user.code}" style="margin-top: 18px; color: #ffffff; text-decoration: none; background-color: #5f00ff; padding: 10px 20px; border-radius: 24px; display: inline-block;" font-size="18px">Join meeting</a>
     """
 
     send_mail.delay(destination, letter, subject) # type: ignore
 
-def send_report_copy(name, email, message):
-    destination = email
+def send_report_copy(user):
+    destination = user.email
     subject = 'Thank you for your report! (book.seniwave.com)'
     letter = f"""\
     <h1>Thank you for your report!</h1>
@@ -72,15 +112,15 @@ def send_report_copy(name, email, message):
 
     send_mail.delay(destination, letter, subject) # type: ignore
 
-def send_report(name, email, message):
+def send_report(user):
     destination = 'me@lbvo.ru'
     subject = 'New report (book.seniwave.com)'
     letter = f"""\
     <h1>New report (book.seniwave.com)</h1>
-    <p>Name: {name}</p>
-    <p>Email: {email}</p>
-    <p>Message: {message}</p>
+    <p>Name: {user.name}</p>
+    <p>Email: {user.email}</p>
+    <p>Message: {user.message}</p>
     """
 
     send_mail.delay(destination, letter, subject) # type: ignore
-    send_report_copy(name, email, message)
+    send_report_copy(user)

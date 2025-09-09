@@ -7,7 +7,7 @@ import mydb as db
 from utils import json_response, format_time, format_date
 from mysecurity import verify, decode
 from models import create_app, create_tables, TimeSpan, CalendarDay, MeetingRequest
-from mail_service import send_code, send_report
+from mail_service import MailUser, MailReport
 
 import redis
 import random
@@ -50,7 +50,7 @@ def rate_limit(timeout=1, max_attempts=5):
             if not user_ip:
                 return json_response({
                     'type': 'error',
-                    'message': 'Что-то пошло не так <a href="https://lbv_dev.t.me">Поддержка</a>'
+                    'message': 'Что-то пошло не так <a href="https://seniwave.t.me">Поддержка</a>'
                 })
 
             counter_key = f"rl_counter:{user_ip}"
@@ -102,7 +102,8 @@ def report():
 
 @app.post('/report')
 def report_post():
-    send_report(name=request.form.get('name'), email=request.form.get('email'), message=request.form.get('message'))
+    mail_report = MailReport(name=request.form.get('name'), email=request.form.get('email'), message=request.form.get('message'))
+    mail_report.send_report()
     return 'OK'
 
 
@@ -147,8 +148,8 @@ def submit_post():
 
     session['meeting_request_id'] = meeting_request.id
 
-    send_code(
-        destination=email,
+    mail_user = MailUser(
+        email=email,
         name=name,
         service=service,
         message=message,
@@ -156,6 +157,8 @@ def submit_post():
         start_time=start_time,
         end_time=end_time,
         code=code)
+
+    mail_user.send_code()
     
     return redirect(url_for('confirmed', id=meeting_request.id))
 
@@ -198,15 +201,20 @@ def cancel_meeting(id):
 
 @app.route("/api/resend/<id>")
 def resend_code(id):
-    meeting_request = MeetingRequest.query.filter_by(id=id).first()
-    if not meeting_request:
+    m = MeetingRequest.query.filter_by(id=id).first()
+    if not m:
         return 'Meeting request not found', 400
 
-    date = format_date(meeting_request.calendar_day.date)
-    start_time = format_time(meeting_request.time_span.start)
-    end_time = format_time(meeting_request.time_span.end)
+    date = format_date(m.calendar_day.date)
+    start_time = format_time(m.time_span.start)
+    end_time = format_time(m.time_span.end)
 
-    send_code(meeting_request.email, meeting_request.meet_code, meeting_request.name, meeting_request.service, meeting_request.message, date, start_time, end_time)
+    mail_user = MailUser(
+        m.email, m.meet_code,
+        m.name, m.service, m.message,
+        date, start_time, end_time)
+    mail_user.send_code()
+
     return 'Mail resent!'
 
 @app.route("/api/available")
