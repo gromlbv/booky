@@ -48,7 +48,7 @@ body[data-theme="dark"] {
     --background-2-color: #1E1E1E;
     --background-3-color: #303030;
 
-    --input-background-color: #101010;
+    --input-fill-color: #101010;
 }
 
 body[data-theme="light"] {
@@ -61,7 +61,7 @@ body[data-theme="light"] {
     --background-2-color: #FFFFFF;
     --background-3-color: #FAFAFA;
 
-    --input-background-color: #FFFFFF;
+    --input-fill-color: #F3F3F3;
 }
 
 
@@ -366,7 +366,7 @@ input, select, textarea{
     padding: 12px 12px;
 
     color: var(--primary-color);
-    background: var(--background-1-color);
+    background: var(--input-fill-color);
     outline: 2px solid transparent;
     border: none;
     border-radius: 8px;
