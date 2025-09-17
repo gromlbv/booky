@@ -1,0 +1,64 @@
+{% macro select(title, name, options) %}
+<label for="{{ name }}">{{ name }}</label>
+<div class="select flex-cl">
+    <button class="head flex align-center gap-48" id="{{ name }}">{{ title }}<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none"><path d="M1.5 1L6 5L10.5 1" stroke="white" stroke-opacity="0.24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="options flex-cl">
+        {% for option in options %}
+            <button class="option"><span>{{ option }}</span><span></span></button>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.select{
+    width: 100%;
+    background-color: var(--background-1-color);
+    border-radius: 12px;
+
+    span:first-child{
+        transition: transform 0.2s;
+        transform-origin: left;
+    }
+    span:last-child{
+        transform-origin: right;
+    }
+    .head{
+        padding: 8px 14px;
+        border-radius: 12px;
+    }
+    .options{
+        gap: 2px;
+        padding: 2px;
+        padding-top: 0;
+    }
+    .options.hidden{
+        display: none;
+    }
+    .options button{
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 10px;
+        background: var(--background-2-color, #1E1E1E);
+        color: var(--primary-color);
+        font-size: 16px;
+    }
+}
+.select button:active{
+    transform: scale(1) !important;
+
+    span{
+        transform: scale(1.1) !important;
+    }
+}
+</style>
+
+<script>
+    $(document).ready(function() {
+        $('.select button').click(function() {
+            $('.select .options').toggleClass('hidden');
+        });
+    });
+</script>
+{% endmacro %}

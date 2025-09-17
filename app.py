@@ -1,22 +1,20 @@
 from flask import Flask
 from flask import render_template, session, request, redirect, url_for, send_from_directory
+
 import os
+import redis
 
 import mydb as db
-
 from utils import json_response, format_time, format_date
 from mysecurity import verify
 from models import create_app, create_tables, TimeSpan, CalendarDay, MeetingRequest
 from mail_service import MailUser, MailReport
-
-import redis
 
 from functools import wraps
 from datetime import datetime
 from env_service import getenv
 
 from ics_service.service import create_event
-
 
 app = Flask(__name__)
 create_app(app)
@@ -144,7 +142,6 @@ def submit_post():
     database.session.add(meeting_request)
     database.session.commit()
 
-    
     start_time = format_time(time_span.start)
     end_time = format_time(time_span.end)
 
@@ -213,7 +210,7 @@ def resend_code(id):
 
     mail_user = MailUser(
         m.email, m.meet_code,
-        m.name, m.service, m.message,
+        m.name, m.services, m.message,
         date, start_time, end_time)
     mail_user.send_code()
 
@@ -281,6 +278,13 @@ def get_time_slots(date):
             return f'''
                 <p>Then, select a time period for <span>{date}</span></p>
                 <p class="no-slots">No available time slots for this date</p>
+            '''
+
+        is_day_off = DayOfWeek.query.filter_by(id=dow + 1).first().is_working == False
+        if is_day_off:
+            return f'''
+                <p>Then, select a time period for <span>{date}</span></p>
+                <p class="no-slots">This day is off</p>
             '''
         
         html = f'''

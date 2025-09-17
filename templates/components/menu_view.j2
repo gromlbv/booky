@@ -32,7 +32,6 @@
 
 <script>
     $(document).ready(function() {
-        // Menu functions
         function openMenu() {
             $('body').addClass('menu-open');
             $('.wrapper').addClass('menu-open');
@@ -78,24 +77,20 @@
 
         $('body').on('touchmove', function(e) {
             if (!startX || !startY) return;
-            
             const currentX = e.originalEvent.touches[0].clientX;
             const currentY = e.originalEvent.touches[0].clientY;
-            
             const deltaX = currentX - startX;
             const deltaY = currentY - startY;
             
-            // Check if it's a horizontal swipe and not vertical
             if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
                 isDragging = true;
-                e.preventDefault(); // Prevent scrolling
+                e.preventDefault();
                 
-                // Only apply transform for left swipe (opening menu)
                 if (deltaX < 0 && !$('body').hasClass('menu-open')) {
                     const swipeDistance = Math.abs(deltaX);
-                    const maxSwipe = 100; // Maximum transform distance
+                    const maxSwipe = 100;
                     const transformPercent = Math.min(swipeDistance / maxSwipe, 1);
-                    const translateX = -transformPercent * 20; // Max 20px transform
+                    const translateX = -transformPercent * 20;
                     
                     $('body').css('transform', `translateX(${translateX}px)`);
                 }
