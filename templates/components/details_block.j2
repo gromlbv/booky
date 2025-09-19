@@ -1,4 +1,5 @@
 {% macro details_block() %}
+{% from 'components/select.j2' import select %}
 <div class="block details gap-8">
     <h2>Fill in your details</h2>
 
@@ -10,13 +11,7 @@
         <input type="email" autocomplete="email" id="email" name="email" placeholder="example@mail.com" required>
 
         <label for="services">What service you need</label>
-        <select id="services" name="services">
-            <option disabled selected value="0">Select a service</option>
-            <option value="web">Web Development</option>
-            <option value="branding">Branding</option>
-            <option value="design">Design System</option>
-            <option value="ai">AI Content & Avatar Generation</option>
-        </select>
+        {{ select("Select services","services",["Branding", "Design System", "Web Development", "3D, AR and AI Animation"])}}
 
         <label for="message">What’s your problem?</label>
         <textarea id="message" name="message" placeholder="What is your challenge?" rows="2"></textarea>

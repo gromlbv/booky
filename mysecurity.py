@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 import jwt
 import time
 
-
 secretkey = getenv('SECRET_KEY')
 
 
@@ -14,7 +13,6 @@ def myhash(message):
     message = sha256(message)
     message = message.hexdigest()
     return message
-
 
 def encode(user_id):
     iat = int(time.time())
@@ -30,7 +28,6 @@ def encode(user_id):
     )
     return encoded_jwt
 
-
 def decode(token):
     try:
         payload = jwt.decode(
@@ -45,7 +42,6 @@ def decode(token):
         print("Недействительный токен")
 
     return None
-
 
 def verify(token):
     try:

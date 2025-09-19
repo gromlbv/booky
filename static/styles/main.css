@@ -295,6 +295,10 @@ svg.contrast-to-accent {
   width: 3rem;
   height: 3rem;
 }
+.circle.small{
+  width: 2rem;
+  height: 2rem;
+}
 
 .full {
   justify-content: space-between;
@@ -781,8 +785,7 @@ header * {
       opacity 1.2s 0.05s var(--smooth-bezier);
   }
 }
-body,
-.global {
+body,.global {
   transition: background 0.2s var(--smooth-bezier);
 }
 .global.menu-open {

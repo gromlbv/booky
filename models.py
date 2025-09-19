@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 
-from env_service import getenv
+from os import getenv
 
 
 db = SQLAlchemy()
@@ -14,7 +14,9 @@ def migrate(app, db):
     Migrate(app, db)
 
 def create_app(app):
-    app.config["SQLALCHEMY_DATABASE_URI"] = getenv('DATABASE_URI')
+    import os
+    db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance', 'database.db')
+    app.config["SQLALCHEMY_DATABASE_URI"] = getenv('DATABASE_URI', f'sqlite:///{db_path}')
     app.config ["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
     migrate(app, db)

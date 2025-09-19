@@ -1,6 +1,5 @@
 {% macro date_block(year=2025, month=9) %}
 {% from 'components/calendar_view.j2' import calendar_view %}
-{% from 'components/select.j2' import select %}
 <div class="block date">
 
     <div class="left-side">
@@ -31,8 +30,6 @@
         </select>
     </div>
     <div class="right-side calendar">
-        {{ select("Select services","services",["Branding", "Design System", "Web Development", "3D, AR and AI Animation"])}}
-
         {{ calendar_view(year, month) }}
     </div>
 </div>

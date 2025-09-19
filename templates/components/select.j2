@@ -1,10 +1,14 @@
 {% macro select(title, name, options) %}
-<label for="{{ name }}">{{ name }}</label>
 <div class="select flex-cl">
-    <button class="head flex align-center gap-48" id="{{ name }}">{{ title }}<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none"><path d="M1.5 1L6 5L10.5 1" stroke="white" stroke-opacity="0.24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <div class="options flex-cl">
+    <button class="head flex align-center justify-between gap-48" id="{{ name }}" type="button">{{ title }}<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none"><path d="M1.5 1L6 5L10.5 1" stroke="white" stroke-opacity="0.24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="options">
         {% for option in options %}
-            <button class="option"><span>{{ option }}</span><span></span></button>
+            <button class="option" name="{{ name }}" type="button"><span>{{ option }}</span>
+            <span class="icon">
+                <img class="check" src="/static/icons/check.svg" alt="checked">
+                <img class="plus" src="/static/icons/plus.svg" alt="plus">
+            </span>
+            </button>
         {% endfor %}
     </div>
 </div>
@@ -19,24 +23,38 @@
         transition: transform 0.2s;
         transform-origin: left;
     }
-    span:last-child{
-        transform-origin: right;
-    }
     .head{
         padding: 8px 14px;
         border-radius: 12px;
+        font-size: 16px;
+    }
+    .head svg{
+        transition: transform 0.3s ease;
+    }
+    .head.rotated svg{
+        transform: rotate(180deg);
     }
     .options{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         gap: 2px;
-        padding: 2px;
+        padding: 0 2px;
         padding-top: 0;
+        height: 0;
+        overflow: hidden;
+        transform-origin: top;
+        transform: scaleY(0.75);
+        transition: height 0.3s ease, padding 0s ease, transform 0.3s ease;
     }
-    .options.hidden{
-        display: none;
+    .options.open{
+        padding-bottom: 2px;
+        transform: scaleY(1);
     }
-    .options button{
+    .option{
         display: flex;
         justify-content: space-between;
+        align-items: center;
         width: 100%;
         padding: 8px 12px;
         border-radius: 10px;
@@ -44,20 +62,118 @@
         color: var(--primary-color);
         font-size: 16px;
     }
+    .option .icon{
+        display: flex;
+        position: relative;
+        width: 16px;
+        height: 16px;
+        border: solid 2px var(--tertiary-color, rgba(255, 255, 255, 0.08));
+        border-radius: 8px;
+        box-sizing: border-box;
+        transition: transform 0.3s, background-color 0.3s, border-color 0.3s;
+    }
+    .option .icon img{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 16px;
+        height: 16px;
+        opacity: 0;
+        transition: opacity 0.6s, transform 0.3s;
+    }
+    .option:hover .icon .plus{
+        opacity: 1;
+    }
 }
 .select button:active{
     transform: scale(1) !important;
-
-    span{
-        transform: scale(1.1) !important;
+    background-color: var(--background-3-color) !important;
+}
+.option.selected .icon{
+    background-color: var(--primary-color) !important;
+    border-color: transparent !important;
+    img.check{
+        opacity: 1;
     }
+}
+.option:hover{
+    background-color: var(--tertiary-color) !important;
+}
+.option:active .icon{
+    transform: scale(1.2) !important;
+    background-color: var(--tertiary-color) !important;
+    border-color: transparent !important;
+    .check{
+        opacity: 0 !important;
+    }
+}
+@media (min-width: 640px) {
+.option.selected:active .icon{
+    background-color: #e9413522 !important;
+    .plus{
+        transform: translate(-50%, -50%) rotate(45deg) !important;
+    }
+}
 }
 </style>
 
 <script>
     $(document).ready(function() {
-        $('.select button').click(function() {
-            $('.select .options').toggleClass('hidden');
+        $('.select .head').click(function() {
+            const $options = $('.select .options');
+            const $head = $(this);
+            
+            if ($options.hasClass('open')) {
+                const currentHeight = $options.height();
+                $options.css('height', currentHeight + 'px');
+                $options.removeClass('open');
+                $head.removeClass('rotated');
+                setTimeout(() => {
+                    $options.css('height', '0px');
+                }, 10);
+            } else {
+                $options.removeClass('hidden');
+                const scrollHeight = $options[0].scrollHeight;
+                $options.css('height', scrollHeight + 'px').addClass('open');
+                $head.addClass('rotated');
+                setTimeout(() => {
+                    if ($options.hasClass('open')) {
+                        $options.css('height', 'auto');
+                    }
+                }, 300);
+            }
+        });
+        $('.select .option').click(function() {
+            const $select = $(this).closest('.select');
+            const $head = $select.find('.head');
+            const $options = $select.find('.options');
+            const selectedText = $(this).find('span').first().text();
+            const selectedValue = $(this).find('span').first().text();
+            $(this).toggleClass('selected');
+            const selectedOptions = $select.find('.option.selected');
+            const selectedValues = [];
+            const selectedTexts = [];
+            
+            selectedOptions.each(function() {
+                const text = $(this).find('span').first().text();
+                selectedValues.push(text);
+                selectedTexts.push(text);
+            });
+            if (selectedTexts.length === 0) {
+                $head.contents().first().replaceWith($head.data('original-text') || 'Select services');
+            } else if (selectedTexts.length === 1) {
+                $head.contents().first().replaceWith(selectedTexts[0]);
+            } else {
+                $head.contents().first().replaceWith(`${selectedTexts.length} selected`);
+            }
+            
+            const inputName = $head.attr('id');
+            $select.find('input[type="hidden"]').remove();
+            
+            selectedValues.forEach(value => {
+                $select.append(`<input type="hidden" name="${inputName}" value="${value}">`);
+            });
         });
     });
 </script>

@@ -5,14 +5,15 @@ import os
 import redis
 
 import mydb as db
-from utils import json_response, format_time, format_date
+from utils import *
 from mysecurity import verify
 from models import create_app, create_tables, TimeSpan, CalendarDay, MeetingRequest
 from mail_service import MailUser, MailReport
+from mail_service.service import send_reminder
 
 from functools import wraps
 from datetime import datetime
-from env_service import getenv
+from os import getenv
 
 from ics_service.service import create_event
 
@@ -111,7 +112,8 @@ def support():
 def submit_post():
     email = request.form.get('email')
     name = request.form.get('name')
-    services = request.form.get('services')
+    services = request.form.getlist('services')
+    services_str = ', '.join(services) if services else ''
     message = request.form.get('message')
     date = request.form.get('date')
     slot_id = request.form.get('slot_id')
@@ -132,7 +134,7 @@ def submit_post():
     meeting_request = MeetingRequest(
         name=name, 
         email=email,
-        services=services,
+        services=services_str,
         message=message,
         time_span=time_span,
         calendar_day=calendar_day
@@ -141,16 +143,14 @@ def submit_post():
     code = meeting_request.set_meet_code()
     database.session.add(meeting_request)
     database.session.commit()
-
     start_time = format_time(time_span.start)
     end_time = format_time(time_span.end)
-
     session['meeting_request_id'] = meeting_request.id
-
+    
     mail_user = MailUser(
         email=email,
         name=name,
-        services=services,
+        services=services_str,
         message=message,
         date=date,
         start_time=start_time,
@@ -175,7 +175,7 @@ def confirmed(id):
     start_time = meeting_request.time_span.start
     end_time = meeting_request.time_span.end
 
-    date = format_date(date)
+    date = format_date_short(date)
     start_time = format_time(start_time)
     end_time = format_time(end_time)
 
@@ -209,12 +209,43 @@ def resend_code(id):
     end_time = format_time(m.time_span.end)
 
     mail_user = MailUser(
-        m.email, m.meet_code,
-        m.name, m.services, m.message,
-        date, start_time, end_time)
+        email=m.email,
+        name=m.name,
+        services=m.services,
+        message=m.message,
+        date=date,
+        start_time=start_time,
+        end_time=end_time,
+        code=m.meet_code
+    )
     mail_user.send_code()
 
-    return 'Mail resent!'
+    return 'Mail resent'
+
+
+@app.route("/api/reminder/<id>")
+def reminder(id):
+    m = MeetingRequest.query.filter_by(id=id).first()
+    if not m:
+        return 'Meeting request not found', 400
+
+    date = format_date(m.calendar_day.date)
+    start_time = format_time(m.time_span.start)
+    end_time = format_time(m.time_span.end)
+
+    mail_user = MailUser(
+        email=m.email,
+        name=m.name,
+        services=m.services,
+        message=m.message,
+        date=date,
+        start_time=start_time,
+        end_time=end_time,
+        code=m.meet_code
+    )
+    mail_user.send_reminder()
+
+    return 'Reminder sent'
 
 @app.route("/api/available")
 def available_slots():
