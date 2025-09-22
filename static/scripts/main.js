@@ -141,8 +141,6 @@ $(document).ready(function() {
         const selectedDate = $('.day.selected').data('date');
         const timeText = `${start}<br>${end}`;
         updateConfirmBlock(selectedDate, timeText, slotId);
-        
-        // console.log('Selected time slot:', slotId, start, '-', end);
     });
 
     $(document).on('click', '#time-block-next button', function() {
@@ -178,5 +176,11 @@ $(document).ready(function() {
         });
         
         this.submit();
+    });
+
+    // header scrolling animation
+    $(window).scroll(function () {
+        const isScrolled = $(this).scrollTop() > 0;
+        $('header').toggleClass('scrolled', isScrolled);
     });
 });

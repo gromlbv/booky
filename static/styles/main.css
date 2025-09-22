@@ -49,6 +49,7 @@ body[data-theme="dark"] {
   --background-3-color: #303030;
 
   --input-fill-color: #101010;
+	--selected-color: #ffffff;
 }
 
 body[data-theme="light"] {
@@ -62,6 +63,7 @@ body[data-theme="light"] {
   --background-3-color: #fafafa;
 
   --input-fill-color: #f3f3f3;
+	--selected-color: #5f00ff;
 }
 
 
@@ -95,11 +97,7 @@ body {
 
 /* basic objects */
 
-h1,
-h2,
-h3,
-h4,
-p {
+h1, h2, h3, h4, p {
   margin: 0;
 }
 h1 {
@@ -144,8 +142,15 @@ img {
   -o-user-drag: none;
 }
 
-a,
-button {
+
+body[data-theme="light"] img.invert-on-white{
+	filter: invert(1) !important;
+}
+body[data-theme="light"] img.bright-on-white{
+	filter: contrast(2);
+}
+
+a, button {
   transition: opacity 0.2s, background 0.2s, color 0.2s, transform 0.2s,
     border-radius 0.3s;
 
@@ -163,49 +168,63 @@ button {
   svg path {
     stroke: var(--primary-color) !important;
   }
-}
-a:active:not(:disabled),
-button:active:not(:disabled) {
-  background: var(--accent-color) !important;
-  color: var(--contrast-to-accent) !important;
-  transform: scale(0.95);
 
-  img {
-    filter: brightness(1.5) contrast(2);
-  }
-  svg path {
-    stroke: var(--contrast-to-accent) !important;
-  }
-}
-a:focus-visible,
-button:focus-visible {
-  outline: 1px solid var(--primary-color);
-  overflow: visible;
-}
-a:disabled,
-button:disabled {
-  cursor: default;
+	&:active:not(:disabled):not(.ignore-defaults){
+		background: var(--accent-color) !important;
+		color: var(--contrast-to-accent) !important;
+		transform: scale(0.95);
+		img {
+			filter: brightness(1.5) contrast(2);
+		}
+		svg path {
+			stroke: var(--contrast-to-accent) !important;
+		}
+	}
+
+	&:focus-visible{
+		outline: 1px solid var(--primary-color);
+		overflow: visible;
+	}
+	&:disabled{
+		cursor: default;
+	}
 }
 
 /* svg */
 
 svg {
   transition: transform var(--smooth-transition);
-}
-svg.secondary-color {
-  path {
-    stroke: var(--secondary-color) !important;
-  }
-}
-svg.subtle-color {
-  path {
-    stroke: var(--subtle-color) !important;
-  }
-}
-svg.contrast-to-accent {
-  path {
-    stroke: var(--contrast-to-accent) !important;
-  }
+	path{
+		transition: stroke 0.2s;
+	}
+
+	&.background-1-color path{
+		stroke: var(--background-1-color) !important;
+	}
+	&.background-2-color path{
+		stroke: var(--background-2-color) !important;
+	}
+	&.background-3-color path{
+		stroke: var(--background-3-color) !important;
+	}
+	&.primary-color path{
+		stroke: var(--primary-color) !important;
+	}
+	&.secondary-color path{
+		stroke: var(--secondary-color) !important;
+	}
+	&.subtle-color path{
+		stroke: var(--subtle-color) !important;
+	}
+	&.contrast-to-accent path{
+		stroke: var(--contrast-to-accent) !important;
+	}
+	&.accent-color path{
+		stroke: var(--accent-color) !important;
+	}
+	&.accent-05-color path{
+		stroke: var(--accent-05-color) !important;
+	}
 }
 
 /* buttons */
@@ -226,6 +245,15 @@ svg.contrast-to-accent {
   color: var(--secondary-color);
   background-color: var(--background-3-color);
   border-radius: 99px;
+	
+	&:hover{
+		background-color: var(--accent-05-color);
+		color: var(--primary-color);
+		transform: scale(1.02);
+	}
+	&:active{
+		border-radius: 16px;
+	}
 }
 .default.bg-2 {
   background-color: var(--background-2-color);
@@ -233,15 +261,6 @@ svg.contrast-to-accent {
 .default.no-bg {
   background-color: transparent;
 }
-.default:hover {
-  background-color: var(--accent-05-color);
-  color: var(--primary-color);
-  transform: scale(1.02);
-}
-.default:active {
-  border-radius: 16px;
-}
-
 .accent {
   display: flex;
   align-items: center;
@@ -259,14 +278,15 @@ svg.contrast-to-accent {
   color: var(--contrast-to-accent);
   background-color: var(--accent-color);
   border-radius: 99px;
-}
-.accent:hover {
-  background-color: var(--accent-05-color);
-  transform: scale(1.1);
-}
-.accent:active {
-  border-radius: 16px;
-  background-color: var(--accent-05-color) !important;
+
+  &:hover{
+    background-color: var(--accent-05-color);
+    transform: scale(1.1);
+  }
+  &:active{
+    border-radius: 16px;
+    background-color: var(--accent-05-color) !important;
+  }
 }
 
 .no-fill {
@@ -279,11 +299,12 @@ svg.contrast-to-accent {
 
   text-decoration: none;
   cursor: pointer;
-}
-.no-fill:hover {
-  background-color: var(--tertiary-color);
-  color: var(--accent-color);
-  transform: scale(1.1);
+
+  &:hover{
+    background-color: var(--tertiary-color);
+    color: var(--accent-color);
+    transform: scale(1.1);
+  }
 }
 
 .circle {
@@ -305,16 +326,6 @@ svg.contrast-to-accent {
   width: 100%;
 }
 
-/* input{
-				border: 1px solid var(--tertiary-color);
-				border-radius: 8px;
-				padding: 8px;
-				background-color: var(--background-2-color);
-				color: var(--primary-color);
-				font-size: 16px;
-				font-weight: 500;
-} */
-
 label {
   margin: 0;
   margin-top: 4px;
@@ -324,9 +335,7 @@ label {
   font-size: 14px;
   font-weight: 400;
 }
-input,
-select,
-textarea {
+input, select, textarea, .input-like {
   padding: 12px 12px;
 
   color: var(--primary-color);
@@ -337,6 +346,10 @@ textarea {
   font-size: 1rem;
 
   transition: outline 0.2s;
+
+    &:focus{
+        outline: 2px solid var(--subtle-color) !important;
+    }
 }
 select.transparent {
   background-color: transparent;
@@ -352,11 +365,6 @@ option {
 textarea {
   resize: vertical;
   min-height: 1.5rem;
-}
-input:focus,
-textarea:focus,
-select:focus {
-  outline: 2px solid var(--subtle-color) !important;
 }
 
 /* views */
@@ -535,7 +543,7 @@ header * {
   flex-direction: column;
 
   max-width: 760px;
-  max-height: 100vh;
+  max-height: 200vh;
   width: 100vw;
   padding: 20px;
   margin-bottom: 8px;
@@ -774,10 +782,9 @@ header * {
 
 .wrapper {
   transition: min-width 0.2s var(--smooth-bezier),
-    border-radius 0.2s var(--smooth-bezier);
+  border-radius 0.2s var(--smooth-bezier);
 
-  .block,
-  .confirmation {
+  .block, .confirmation {
     transform-origin: bottom left;
     transition: all var(--smooth-transition),
       transform 0.2s 0.05s var(--smooth-bezier),
@@ -785,7 +792,7 @@ header * {
       opacity 1.2s 0.05s var(--smooth-bezier);
   }
 }
-body,.global {
+body, .global {
   transition: background 0.2s var(--smooth-bezier);
 }
 .global.menu-open {
@@ -851,7 +858,12 @@ body.menu-open {
     color: var(--contrast-to-accent) !important;
   }
 
-  a {
+	a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+
     position: relative;
 
     width: fit-content;
@@ -862,18 +874,21 @@ body.menu-open {
 
     overflow: hidden;
 
-    span {
-      opacity: 0.5;
+
+		span {
+			opacity: 0.5;
+    }
+    &:hover{
+        span {
+            opacity: 1;
+            transform: scale(1.1);
+        }
     }
   }
   a.big {
     font-size: 24px;
   }
-  a:hover {
-    span {
-      opacity: 1;
-    }
-  }
+
 
   a::after {
     content: "";
@@ -946,48 +961,6 @@ body.menu-open {
   }
 }
 
-@media (max-width: 1024px) {
-  .menu {
-    max-width: 80vw !important;
-    padding-left: 0;
-  }
-  .wrapper.menu-open {
-    min-width: 10vw;
-    max-width: 10vw;
-    height: 80vh;
-
-    align-items: flex-end;
-
-    overflow: hidden;
-  }
-}
-@media (max-width: 640px) {
-  header {
-    padding: 12px 18px;
-    margin-bottom: 0;
-
-    background-color: var(--background-3-color);
-  }
-  .wrapper {
-    padding: 12px !important;
-    box-sizing: border-box;
-  }
-  .block {
-    width: 100%;
-    max-width: none !important;
-  }
-  .block.date {
-    flex-direction: column;
-  }
-}
-@media (max-width: 480px) {
-  .calendar {
-    .days {
-      gap: 2px;
-    }
-  }
-}
-
 .theme-switch {
   display: none;
 }
@@ -1023,19 +996,19 @@ body.menu-open {
 }
 
 .theme-slider {
-  position: absolute;
-  z-index: 1;
-  top: 1px;
-  right: 1px;
+	position: absolute;
+	z-index: 1;
+	top: 1px;
+	right: 1px;
 
-  width: 24px;
-  height: 24px;
+	width: 24px;
+	height: 24px;
 
-  background-color: rgb(255, 255, 255);
-  opacity: 0.08;
-  border-radius: 6px;
+	background-color: rgb(255, 255, 255);
+	opacity: 0.08;
+	border-radius: 6px;
 
-  transition: all 0.3s;
+	transition: all 0.3s;
 }
 .theme-slider:active {
   scale: 0.9;
@@ -1049,4 +1022,52 @@ body.menu-open {
 }
 .theme-switch:checked + .theme-switch-label .theme-icon:last-child {
   opacity: 0.24;
+}
+
+
+/* media queries */
+
+@media (max-width: 1024px) {
+  .menu {
+    max-width: 80vw !important;
+    padding-left: 0;
+  }
+  .wrapper.menu-open {
+    min-width: 10vw;
+    max-width: 10vw;
+    height: 80vh;
+
+    align-items: flex-end;
+
+    overflow: hidden;
+  }
+}
+@media (max-width: 640px) {
+	header {
+		padding: 12px 18px;
+    margin-bottom: 0;
+
+    background-color: var(--background-3-color);
+  }
+  .wrapper {
+    padding: 12px !important;
+    box-sizing: border-box;
+  }
+  .block {
+    width: 100%;
+    max-width: none !important;
+  }
+  .block.date {
+    flex-direction: column;
+  }
+	.confirmation {
+		margin-top: 0;
+	}
+}
+@media (max-width: 480px) {
+  .calendar {
+    .days {
+      gap: 2px;
+    }
+  }
 }

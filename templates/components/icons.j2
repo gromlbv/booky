@@ -1,0 +1,23 @@
+{% macro icon(icon_name, class='') %}
+  {% if icon_name == 'back' %}
+    <svg class="{{ class }}" xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L6.75 13" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  {% elif icon_name == 'arrow' %}
+    <svg class="{{ class }}" xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1L7 7L1 13" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  {% elif icon_name == 'check' %}
+    <svg class="{{ class }}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.5 4.5L6 12L2.5 8.5" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  {% elif icon_name == 'check2' %}
+    <svg class="{{ class }}" xmlns="http://www.w3.org/2000/svg" width="17" height="14" viewBox="0 0 17 14" fill="none"><path d="M1.5 7.45833C3.6875 8.83333 4.85841 10.0953 6.16667 12.5C7.625 8.83333 11.125 3.33333 15.5 1.5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  {% elif icon_name == 'clock' %}
+    <svg class="{{ class }}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="var(--secondary-color)" stroke-width="2"/><path d="M8 4V8L10.5 10.5" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round"/></svg>
+  {% elif icon_name == 'menu' %}
+    <svg class="{{ class }}" xmlns="http://www.w3.org/2000/svg" width="20" height="16" viewBox="0 0 20 16" fill="none"><path d="M1 1H19M1 8H19M1 15H19" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round"/></svg>
+  {% elif icon_name == 'phone' %}
+    <svg class="{{ class }}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3.5 2.5C3.5 1.67 4.17 1 5 1H11C11.83 1 12.5 1.67 12.5 2.5V13.5C12.5 14.33 11.83 15 11 15H5C4.17 15 3.5 14.33 3.5 13.5V2.5Z" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 4H9.5" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round"/></svg>
+  {% elif icon_name == 'plus' %}
+    <svg class="{{ class }}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1V15M1 8H15" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round"/></svg>
+  {% elif icon_name == 'check-mini' %}
+    <svg class="{{ class }}" xmlns="http://www.w3.org/2000/svg" width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1.00391 2.8549L2.48338 4.5266C2.65884 4.72486 2.94331 4.72486 3.11877 4.5266L6.39541 0.824219" stroke="var(--secondary-color)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  {% elif icon_name == 'plus-mini' %}
+    <svg class="{{ class }}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1V15M1 8H15" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="8" height="9" viewBox="0 0 8 9" fill="none"><path d="M1.25 4.5H4M6.75 4.5H4M4 4.5V1.75M4 4.5V7.25" stroke="white" stroke-opacity="0.08" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  {% endif %}
+{% endmacro %}

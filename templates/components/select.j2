@@ -3,10 +3,10 @@
     <button class="head flex align-center justify-between gap-48" id="{{ name }}" type="button">{{ title }}<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none"><path d="M1.5 1L6 5L10.5 1" stroke="white" stroke-opacity="0.24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="options">
         {% for option in options %}
-            <button class="option" name="{{ name }}" type="button"><span>{{ option }}</span>
+            <button class="option ignore-defaults" name="{{ name }}" type="button"><span>{{ option }}</span>
             <span class="icon">
-                <img class="check" src="/static/icons/check.svg" alt="checked">
-                <img class="plus" src="/static/icons/plus.svg" alt="plus">
+                <img class="check invert-on-white" src="/static/icons/check.svg" alt="checked">
+                <img class="plus invert-on-white" src="/static/icons/plus.svg" alt="plus">
             </span>
             </button>
         {% endfor %}
@@ -16,13 +16,9 @@
 <style>
 .select{
     width: 100%;
-    background-color: var(--background-1-color);
+    background-color: var(--input-fill-color);
     border-radius: 12px;
 
-    span:first-child{
-        transition: transform 0.2s;
-        transform-origin: left;
-    }
     .head{
         padding: 8px 14px;
         border-radius: 12px;
@@ -58,32 +54,57 @@
         width: 100%;
         padding: 8px 12px;
         border-radius: 10px;
-        background: var(--background-2-color, #1E1E1E);
+        background: var(--background-2-color);
         color: var(--primary-color);
         font-size: 16px;
+
+        &:hover{
+            background-color: var(--tertiary-color) !important;
+
+            .icon .plus{
+                opacity: 1;
+            }
+        }
+        body[data-theme="light"] &:hover{
+            background-color: var(--background-3-color) !important;
+        }
+        &:active{
+            .icon{
+                transform: scale(1.2) !important;
+                background-color: var(--tertiary-color) !important;
+                border-color: transparent !important;
+                .check{
+                    opacity: 0 !important;
+                }
+            }
+            
+        }
     }
+
     .option .icon{
         display: flex;
         position: relative;
         width: 16px;
         height: 16px;
-        border: solid 2px var(--tertiary-color, rgba(255, 255, 255, 0.08));
+        border: solid 2px var(--tertiary-color);
         border-radius: 8px;
         box-sizing: border-box;
         transition: transform 0.3s, background-color 0.3s, border-color 0.3s;
+
+        &:first-child{
+            transition: transform 0.2s;
+            transform-origin: left;
+        }
     }
     .option .icon img{
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
         width: 16px;
         height: 16px;
+        transform: translate(-50%, -50%);
         opacity: 0;
         transition: opacity 0.6s, transform 0.3s;
-    }
-    .option:hover .icon .plus{
-        opacity: 1;
     }
 }
 .select button:active{
@@ -91,23 +112,13 @@
     background-color: var(--background-3-color) !important;
 }
 .option.selected .icon{
-    background-color: var(--primary-color) !important;
+    background-color: var(--selected-color) !important;
     border-color: transparent !important;
     img.check{
         opacity: 1;
     }
 }
-.option:hover{
-    background-color: var(--tertiary-color) !important;
-}
-.option:active .icon{
-    transform: scale(1.2) !important;
-    background-color: var(--tertiary-color) !important;
-    border-color: transparent !important;
-    .check{
-        opacity: 0 !important;
-    }
-}
+
 @media (min-width: 640px) {
 .option.selected:active .icon{
     background-color: #e9413522 !important;

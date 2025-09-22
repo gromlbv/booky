@@ -1,14 +1,15 @@
+{% from 'components/menu_view.j2' import menu_view %}
 {% from 'components/date_block.j2' import date_block %}
 {% from 'components/time_block.j2' import time_block %}
 {% from 'components/confirm_block.j2' import confirm_block %}
 {% from 'components/details_block.j2' import details_block %}
 {% from 'components/tooltip/actions.j2' import tooltip_actions %}
 {% from 'components/tooltip/services.j2' import tooltip_services %}
-{% from 'components/menu_view.j2' import menu_view %}
+
+{% from 'components/icons.j2' import icon %}
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,16 +30,20 @@
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="#000000">
 </head>
-
 <body>
     <header class="flex-between w-100">
-        {% block back_button %}
-        <a id="back-button" class="no-fill circle" href="https://seniwave.com" data-description="Back to SeniWave">
-            <svg class="secondary-color" xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L6.75 13" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-        {% endblock back_button %}
+        <div class="flex">
+            {% block back_button %}
+            <a id="back-button" class="no-fill circle" href="https://seniwave.com" data-description="Back to SeniWave">
+                {{ icon("back", "secondary-color") }}
+            </a>
+            {% endblock back_button %}
+            <div class="mobile-only">
+
+            </div>
+        </div>
         <button class="no-fill circle toggle-menu" data-description="Menu">
-            <svg class="secondary-color" xmlns="http://www.w3.org/2000/svg" width="26" height="18" viewBox="0 0 26 18" fill="none"><path d="M1 1H25M1 17H25M1 9H25" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            {{ icon("menu", "secondary-color") }}
         </button>
     </header>
     
@@ -56,7 +61,7 @@
                 {{ details_block() }}
                 <button class="accent" type="submit">
                     Confirm
-                    <svg class="contrast-to-accent" xmlns="http://www.w3.org/2000/svg" width="17" height="14" viewBox="0 0 17 14" fill="none"><path d="M1.5 7.45833C3.6875 8.83333 4.85841 10.0953 6.16667 12.5C7.625 8.83333 11.125 3.33333 15.5 1.5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    {{ icon("check2", "contrast-to-accent") }}
                 </button>
             </form>
             {% endblock content %}

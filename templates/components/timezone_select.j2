@@ -10,9 +10,9 @@
     {% if hx_include %}hx-include="{{ hx_include }}"{% endif %}
     {% if hx_swap %}hx-swap="{{ hx_swap }}"{% endif %}>
     {% if placeholder %}
-    <option value="">{{ placeholder }}</option>
+    <option value="" disabled selected>{{ placeholder }}</option>
     {% endif %}
-    <option value="+00:00" {% if value == '+00:00' %}selected{% endif %}>UTC</option>
+    <option value="+00:00" {% if value == '+00:00' %}selected{% endif %}>UTC (GMT+00:00)</option>
     <option value="+01:00" {% if value == '+01:00' %}selected{% endif %}>London Time (GMT+01:00)</option>
     <option value="+02:00" {% if value == '+02:00' %}selected{% endif %}>Berlin Time (GMT+02:00)</option>
     <option value="+03:00" {% if value == '+03:00' %}selected{% endif %}>Moscow Time (GMT+03:00)</option>
