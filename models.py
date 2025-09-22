@@ -26,7 +26,6 @@ def create_tables():
     db.create_all()
 
 
-
 class DayOfWeek(db.Model):
     __tablename__ = 'days_of_week'
     id = db.Column(db.Integer, primary_key=True)

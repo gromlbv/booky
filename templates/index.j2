@@ -4,7 +4,6 @@
 {% from 'components/confirm_block.j2' import confirm_block %}
 {% from 'components/details_block.j2' import details_block %}
 {% from 'components/tooltip/actions.j2' import tooltip_actions %}
-{% from 'components/tooltip/services.j2' import tooltip_services %}
 
 {% from 'components/icons.j2' import icon %}
 
@@ -48,8 +47,6 @@
     </header>
     
     <div class="global">
-        {{ tooltip_actions() }}
-        {{ tooltip_services() }}
         <div class="wrapper">
             {% block content %}
             {{ date_block() }}
@@ -75,10 +72,7 @@
             month: {{ month }}
         };
     </script>
-
     <script src="/static/scripts/main.js"></script>
     <script src="/static/scripts/tooltip.js"></script>
 </body>
-
-
 </html>

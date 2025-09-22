@@ -218,9 +218,13 @@ def confirmed(id):
     start_time = meeting_request.time_span.start
     end_time = meeting_request.time_span.end
 
-    date = format_date_short(date)
-    start_time = format_time(start_time)
-    end_time = format_time(end_time)
+    adjusted_date = format_date_timezone(date, start_time, end_time)
+    adjusted_start_time = format_time_timezone(start_time)
+    adjusted_end_time = format_time_timezone(end_time)
+
+    date = adjusted_date
+    start_time = adjusted_start_time
+    end_time = adjusted_end_time
 
     return R.confirmed(meeting_request=meeting_request, date=date, start_time=start_time, end_time=end_time)
 

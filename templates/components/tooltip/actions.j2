@@ -1,13 +1,23 @@
-{% macro tooltip_actions() %}
+{% macro tooltip_actions(actions=[]) %}
 
-<div class="tooltip actions">
-   
+<button class="action-button default circle ignore-defaults" data-action="actions" style="text-">
+···
+<div class="action-content">
+    {% for action in actions %}
+        {{ tooltip_action(action) }}
+    {% endfor %}
 </div>
+</button>
 
-<style>
-.tooltip.actions{
-    display: none;
-}
-</style>
+<script>
+    $(document).ready(function() {
+        $('.action-button').click(function() {
+            $('.action-content').toggleClass('open');
+        });
+    });
+</script>
+{% endmacro %}
 
+{% macro tooltip_action(action) %}
+<a class="action {{ action.class }} ignore-defaults" data-action="{{ action.action }}">{{ action.name }}</a>
 {% endmacro %}

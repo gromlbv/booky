@@ -1,6 +1,4 @@
 {% extends 'index.j2' %}
-
-
 {% block content %}
 
 <h1 class="center">Meeting with <img class="logo-animated" src="/static/logos/small.svg" alt="SeniWave" align="bottom">SeniWave</h1>
@@ -19,7 +17,6 @@
                 <div class="flex-cl">
                     <p>30 min</p>
                     <p>Online Meeting</p>
-
                 </div>
             </div>
             <div class="right-side flex-cl flex-between align-end">
@@ -47,6 +44,16 @@
     <button class="default no-bg" id="send-reminder" type="button" hx-get="/api/reminder/{{ meeting_request.id }}" hx-swap="innerHTML">
         Send reminder
     </button>  
+    {{ tooltip_actions([
+        {
+            "name": "Cancel Meeting",
+            "action": "cancel-meeting"
+        },
+        {
+            "name": "Resend code",
+            "action": "resend-code"
+        }
+    ]) }}
 </div>
 
 <script>
