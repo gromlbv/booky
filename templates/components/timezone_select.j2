@@ -1,0 +1,41 @@
+{% macro timezone_select(name='', placeholder='', value='', required=false, class='', id='', label='', hx_post='', hx_target='', hx_trigger='', hx_include='', hx_swap='innerHTML') %}
+<select 
+    name="{{ name }}"
+    id="{{ id or name }}"
+    {% if required %}required{% endif %}
+    class="{{ class }}"
+    {% if hx_post %}hx-post="{{ hx_post }}"{% endif %}
+    {% if hx_target %}hx-target="{{ hx_target }}"{% endif %}
+    {% if hx_trigger %}hx-trigger="{{ hx_trigger }}"{% else %}hx-trigger="change"{% endif %}
+    {% if hx_include %}hx-include="{{ hx_include }}"{% endif %}
+    {% if hx_swap %}hx-swap="{{ hx_swap }}"{% endif %}>
+    {% if placeholder %}
+    <option value="">{{ placeholder }}</option>
+    {% endif %}
+    <option value="+00:00" {% if value == '+00:00' %}selected{% endif %}>UTC</option>
+    <option value="+01:00" {% if value == '+01:00' %}selected{% endif %}>London Time (GMT+01:00)</option>
+    <option value="+02:00" {% if value == '+02:00' %}selected{% endif %}>Berlin Time (GMT+02:00)</option>
+    <option value="+03:00" {% if value == '+03:00' %}selected{% endif %}>Moscow Time (GMT+03:00)</option>
+    <option value="+04:00" {% if value == '+04:00' %}selected{% endif %}>Dubai Time (GMT+04:00)</option>
+    <option value="+05:00" {% if value == '+05:00' %}selected{% endif %}>Kolkata Time (GMT+05:00)</option>
+    <option value="+06:00" {% if value == '+06:00' %}selected{% endif %}>Bangkok Time (GMT+06:00)</option>
+    <option value="+07:00" {% if value == '+07:00' %}selected{% endif %}>Hanoi Time (GMT+07:00)</option>
+    <option value="+08:00" {% if value == '+08:00' %}selected{% endif %}>Beijing Time (GMT+08:00)</option>
+    <option value="+09:00" {% if value == '+09:00' %}selected{% endif %}>Tokyo Time (GMT+09:00)</option>
+    <option value="+10:00" {% if value == '+10:00' %}selected{% endif %}>Sydney Time (GMT+10:00)</option>
+    <option value="+11:00" {% if value == '+11:00' %}selected{% endif %}>New Zealand Time (GMT+11:00)</option>
+    <option value="+12:00" {% if value == '+12:00' %}selected{% endif %}>Auckland Time (GMT+12:00)</option>
+    <option value="-01:00" {% if value == '-01:00' %}selected{% endif %}>Azores Time (GMT-01:00)</option>
+    <option value="-02:00" {% if value == '-02:00' %}selected{% endif %}>Mid-Atlantic Time (GMT-02:00)</option>
+    <option value="-03:00" {% if value == '-03:00' %}selected{% endif %}>Brasilia Time (GMT-03:00)</option>
+    <option value="-04:00" {% if value == '-04:00' %}selected{% endif %}>Atlantic Time (GMT-04:00)</option>
+    <option value="-05:00" {% if value == '-05:00' %}selected{% endif %}>Eastern Time (GMT-05:00)</option>
+    <option value="-06:00" {% if value == '-06:00' %}selected{% endif %}>Central Time (GMT-06:00)</option>
+    <option value="-07:00" {% if value == '-07:00' %}selected{% endif %}>Mountain Time (GMT-07:00)</option>
+    <option value="-08:00" {% if value == '-08:00' %}selected{% endif %}>Pacific Time (GMT-08:00)</option>
+    <option value="-09:00" {% if value == '-09:00' %}selected{% endif %}>Alaska Time (GMT-09:00)</option>
+    <option value="-10:00" {% if value == '-10:00' %}selected{% endif %}>Hawaii Time (GMT-10:00)</option>
+    <option value="-11:00" {% if value == '-11:00' %}selected{% endif %}>Samoa Time (GMT-11:00)</option>
+    <option value="-12:00" {% if value == '-12:00' %}selected{% endif %}>Baker Island Time (GMT-12:00)</option>
+</select>
+{% endmacro %}

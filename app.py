@@ -9,13 +9,13 @@ from utils import *
 from mysecurity import verify
 from models import create_app, create_tables, TimeSpan, CalendarDay, MeetingRequest
 from mail_service import MailUser, MailReport
-from mail_service.service import send_reminder
-
-from functools import wraps
-from datetime import datetime
-from os import getenv
 
 from ics_service.service import create_event
+
+from functools import wraps
+from datetime import datetime, timedelta
+from os import getenv
+
 
 app = Flask(__name__)
 create_app(app)
@@ -24,6 +24,15 @@ with app.app_context():
     create_tables()
 
 app.secret_key = getenv('SECRET_KEY')
+
+@app.template_global()
+def format_time_tz(minutes):
+    return format_time_with_timezone(minutes)
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(days=12)
 
 r = redis.Redis()
 
@@ -108,6 +117,38 @@ def support():
     return redirect('https://seniwave.com/contact')
 
 
+def get_user_timezone():
+    return session.get('timezone', '+00:00')
+
+def set_user_timezone(timezone):
+    if not timezone:
+        return False, "Timezone is required"
+    session['timezone'] = timezone
+    return True, f"Timezone set to {timezone}"
+
+@app.post('/set-timezone')
+def set_timezone():
+    timezone = request.form.get("timezone")
+    success, message = set_user_timezone(timezone)
+    
+    if not success:
+        if request.headers.get('HX-Request'):
+            return f'<div class="error">{message}</div>', 400
+        return message, 400
+    
+    if request.headers.get('HX-Request'):
+        return f'''
+        <div class="success-message">{message}</div>
+        <script>
+            setTimeout(() => {{
+                window.location.reload();
+            }}, 500);
+        </script>
+        '''
+    
+    return message
+
+    
 @app.post('/submit')
 def submit_post():
     email = request.form.get('email')
@@ -117,6 +158,8 @@ def submit_post():
     message = request.form.get('message')
     date = request.form.get('date')
     slot_id = request.form.get('slot_id')
+    
+    user_timezone = get_user_timezone()
 
     if not email or not name or not date or not slot_id:
         return 'Not all fields are filled or something went wrong'
@@ -293,14 +336,10 @@ def get_time_slots(date):
         
         slots = []
         for span in time_spans:
-            start_h = span.start // 60
-            start_m = span.start % 60
-            end_h = span.end // 60
-            end_m = span.end % 60
             slots.append({
                 'id': span.id,
-                'start': f"{start_h:02}:{start_m:02}",
-                'end': f"{end_h:02}:{end_m:02}",
+                'start': format_time_with_timezone(span.start),
+                'end': format_time_with_timezone(span.end),
                 'start_minutes': span.start,
                 'end_minutes': span.end
             })
@@ -472,6 +511,10 @@ def init_spans():
     database.session.commit()
 
     return "<span class='post-result' id='span-status'>DONE</span>"
+
+
+
+
 
 
 

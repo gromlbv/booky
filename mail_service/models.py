@@ -1,4 +1,4 @@
-from mail_service.service import send_code, send_report, send_reminder
+from mail_service.main import send_code, send_report, send_reminder
 
 class MailUser:
     def __init__(self, email, name, services, message, date, start_time, end_time, code):

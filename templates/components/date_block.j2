@@ -1,7 +1,7 @@
 {% macro date_block(year=2025, month=9) %}
 {% from 'components/calendar_view.j2' import calendar_view %}
+{% from 'components/timezone_select.j2' import timezone_select %}
 <div class="block date">
-
     <div class="left-side">
         <div class="flex gap-12 align-center">
             <img class="logo-animated" src="/static/logos/default.svg" alt="Purple logo with blue wave">
@@ -24,10 +24,7 @@
             <hr>
             <p class="p-8-0">Let's find a time to meet!</p>
         </div>
-        <select class="transparent" name="timezone" id="timezone">
-            <option value="Moscow Time (GMT+03:00)">Moscow Time (GMT+03:00)</option>
-            <option value="Moscow Time (GMT+03:00)">Options will be added soon</option>
-        </select>
+            {{ timezone_select(name='timezone', value=session.get('timezone', ''), placeholder='Choose timezone...', class="transparent", hx_post='/set-timezone') }}
     </div>
     <div class="right-side calendar">
         {{ calendar_view(year, month) }}

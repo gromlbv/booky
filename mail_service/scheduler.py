@@ -40,7 +40,7 @@ def check_and_send_reminders():
             total_hours = time_until['days'] * 24 + time_until['hours']
             
             if 23 <= total_hours <= 25:
-                from mail_service.service import send_code
+                from mail_service.main import send_code
                 from mail_service.models import MailUser
                 
                 user = MailUser(
@@ -57,7 +57,7 @@ def check_and_send_reminders():
                 print(f"24h reminder sent to {user_data['email']}")
             
             if 0 <= total_hours <= 2:
-                from mail_service.service import send_code
+                from mail_service.main import send_code
                 from mail_service.models import MailUser
                 
                 user = MailUser(
