@@ -48,7 +48,7 @@ class ReturnTemplate:
 R = ReturnTemplate()
 
 
-def rate_limit(timeout=1, max_attempts=5):
+def rate_limit(timeout=1, max_attempts=5, reply=''):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -67,6 +67,8 @@ def rate_limit(timeout=1, max_attempts=5):
             if attempts == 1:
                 r.expire(counter_key, timeout)
             if attempts_int > max_attempts:
+                if reply:
+                    return reply
                 return json_response({
                     'type': 'warning',
                     'message': 'TOO MUCH REQUESTS!'
@@ -235,7 +237,7 @@ from models import DayOfWeek, TimeSpan
 from datetime import datetime
 import calendar
 
-
+@rate_limit(timeout=5, max_attempts=1)
 @app.route("/api/cancel/<id>")
 def cancel_meeting(id):
     meeting_request = MeetingRequest.query.filter_by(id=id).first()
@@ -245,11 +247,12 @@ def cancel_meeting(id):
     session.pop('meeting_request_id', None)
     return 'Meeting cancelled! Redirecting...'
 
+@rate_limit(timeout=60, max_attempts=1, reply='Next one in 60 seconds')
 @app.route("/api/resend/<id>")
 def resend_code(id):
     m = MeetingRequest.query.filter_by(id=id).first()
     if not m:
-        return 'Meeting request not found', 400
+        return 'Meeting request not found', 400    
 
     date = format_date(m.calendar_day.date)
     start_time = format_time(m.time_span.start)

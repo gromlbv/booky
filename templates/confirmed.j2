@@ -47,11 +47,12 @@
     {{ tooltip_actions([
         {
             "name": "Cancel Meeting",
-            "action": "cancel-meeting"
+            "class": "danger",
+            "hx_get": "/api/cancel/" + meeting_request.id|string
         },
         {
             "name": "Resend code",
-            "action": "resend-code"
+            "hx_get": "/api/resend/" + meeting_request.id|string
         }
     ]) }}
 </div>

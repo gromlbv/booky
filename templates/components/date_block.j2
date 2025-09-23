@@ -1,6 +1,7 @@
 {% macro date_block(year=2025, month=9) %}
 {% from 'components/calendar_view.j2' import calendar_view %}
-{% from 'components/timezone_select.j2' import timezone_select %}
+{% from 'components/tooltip/timezone_select.j2' import timezone_select %}
+
 <div class="block date">
     <div class="left-side">
         <div class="flex gap-12 align-center">

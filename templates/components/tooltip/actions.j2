@@ -11,13 +11,33 @@
 
 <script>
     $(document).ready(function() {
-        $('.action-button').click(function() {
+        $('.action-button').click(function(e) {
+            e.stopPropagation();
+            if ($(e.target).closest('.action-content').length) {
+                return;
+            }
             $('.action-content').toggleClass('open');
         });
+    });
+    // if cursor is off the action-button
+    let closeTimer;
+    $(document).on('mouseleave', '.action-button', function() {
+        closeTimer = setTimeout(function() {
+            $('.action-content').removeClass('open');
+        }, 800);
+    });
+    $(document).on('mouseenter', '.action-button', function() {
+        clearTimeout(closeTimer);
+    });
+    // click outside the action-content
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.action-button').length) {
+            $('.action-content').removeClass('open');
+        }
     });
 </script>
 {% endmacro %}
 
 {% macro tooltip_action(action) %}
-<a class="action {{ action.class }} ignore-defaults" data-action="{{ action.action }}">{{ action.name }}</a>
+<a class="action {{ action.class }} ignore-defaults" hx-swap="innerHTML" hx-get="{{ action.hx_get }}">{{ action.name }}</a>
 {% endmacro %}
