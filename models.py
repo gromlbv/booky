@@ -95,22 +95,24 @@ class MeetingRequest(db.Model):
 
     timespan_id = db.Column(db.Integer, db.ForeignKey('time_spans.id'), nullable=False)
     time_span = relationship('TimeSpan', backref='meeting_requests')
+    user_timezone = db.Column(db.String)
 
     calendar_day_id = db.Column(db.Integer, db.ForeignKey('calendar_days.id'), nullable=False)
     calendar_day = relationship('CalendarDay', backref='meeting_requests')
 
     meet_code = db.Column(db.Integer)
 
-    def __init__(self, name, email, services, message, time_span, calendar_day):
+    def __init__(self, name, email, services, message, time_span, calendar_day, user_timezone):
         self.name = name
         self.email = email
         self.services = services
         self.message = message
         self.time_span = time_span
         self.calendar_day = calendar_day
+        self.user_timezone = user_timezone
 
     def set_meet_code(self):
-        self.meet_code = random.randint(0000, 9999)
+        self.meet_code = random.randint(1000, 9999)
         return self.meet_code
 
     def cancel(self):

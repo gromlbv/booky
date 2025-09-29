@@ -1,0 +1,11 @@
+{% extends 'index.j2' %}
+{% from 'components/status-block.j2' import status_block %}
+
+{% block title %}Meeting not found{% endblock title %}
+{% block content %}
+{{ status_block("Meeting not found", description="The meeting you are looking for does not exist", image="/static/images/404-banner.png", buttons=[
+    {"text": "Jump into booking", "link": "/", "class": "primary"},
+    {"text": "Support via Telegram", "link": "https://t.me/seniwave", "class": "no-bg"}
+]) }}
+
+{% endblock content %}

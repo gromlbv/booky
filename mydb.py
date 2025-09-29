@@ -2,7 +2,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from sqlalchemy import func
 
-from models import db, DayOfWeek, TimeSpan, CalendarDay
+from models import db, DayOfWeek, TimeSpan, CalendarDay, MeetingRequest
 from models import db
 
 from mysecurity import myhash, verify, encode
@@ -90,3 +90,8 @@ def get_available_time_spans(date):
     if not day_of_week.is_working:
         return []
     return TimeSpan.query.filter_by(day_of_week=day_of_week, is_working=True).all()
+
+
+
+def get_meeting_request(id):
+    return MeetingRequest.query.filter_by(id=id).first()

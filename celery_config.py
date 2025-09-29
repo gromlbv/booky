@@ -19,9 +19,5 @@ from mail_service.scheduler import check_and_send_reminders
 def send_email_task(destination, subject, content, content_type='html'):
     return send_email(destination, subject, content, content_type)
 
-@celery_app.task(name='check_and_send_reminders')
-def check_and_send_reminders_task():
-    return check_and_send_reminders()
-
 if __name__ == '__main__':
     celery_app.start()

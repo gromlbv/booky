@@ -1,76 +1,194 @@
 {% extends 'index.j2' %}
 {% block content %}
 
-<h1 class="center">Meeting with <img class="logo-animated" src="/static/logos/small.svg" alt="SeniWave" align="bottom">SeniWave</h1>
-<div class="block confirm flex-cl gap-12">
-    <div class="flex-cl gap-12">
-        <div class="flex">
-            <div class="left-side flex-cl flex-between gap-32">
-                <div class="flex align-center gap-4">
-                    <h2 id="confirm-date">{{ date }}</h2>
-                    {% if meeting_request %}
-                    <button class="no-fill circle small" data-description="Meet booked successfully">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" fill="none"><path d="M1 7.45833C3.1875 8.83333 4.35841 10.0953 5.66667 12.5C7.125 8.83333 10.625 3.33333 15 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                    {% endif %}
+<div class="block confirmed flex-cl gap-32">
+    <div class="accent-block">
+        <div class="left-side flex-cl gap-24">
+            <h1 class="max-w-320"><span data-localize="jump_in_meeting">Jump in meeting with</span> SeniWave</h1>
+            <div class="time-left-cards">
+                <div class="card">
+                    <h3 id="countdown-days">00</h3>
+                    <p data-localize="days">days</p>
                 </div>
-                <div class="flex-cl">
-                    <p>30 min</p>
-                    <p>Online Meeting</p>
+                <div class="card">
+                    <h3 id="countdown-hours">00</h3>
+                    <p data-localize="hours">hours</p>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                    <h3 id="countdown-minutes">00</h3>
+                    <p data-localize="minutes">minutes</p>
+                    </div>
                 </div>
             </div>
-            <div class="right-side flex-cl flex-between align-end">
-                <h1 id="confirm-time">{{ start_time }} <br> {{ end_time }}</h1>
-            </div>
+            <p><span data-localize="and">and</span> <span id="countdown-seconds">00</span> <span data-localize="seconds">seconds</span></p>
+            <a class="big-white" href="https://meet.seniwave.com/rooms/{{ meeting_request.meet_code }}" data-localize="join_call">
+                Join call
+            </a>
         </div>
-        <hr>
-        <div class="flex gap-16">
-            <p>{{ meeting_request.services }}</p>
-            <p class="text-right">GMT + 03:00</p>
+        <div class="right-side">
+            <img src="/static/email/3d-thing.png">
         </div>
     </div>
+
+    <section class="flex-cl gap-32 p-0-32">
+        <div class="flex-cl gap-12">
+            <div class="flex">
+                <div class="left-side flex-cl justify-between gap-32">
+                    <div class="flex align-center gap-4">
+                        <h2 id="confirm-date">{{ format_date_localized_template(meeting_request.calendar_day.date) }}</h2>
+                        {% if meeting_request %}
+                        <button class="no-fill circle small" data-localize-attr="data-description:meet_booked" data-description="Meet booked successfully">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" fill="none"><path d="M1 7.45833C3.1875 8.83333 4.35841 10.0953 5.66667 12.5C7.125 8.83333 10.625 3.33333 15 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                        {% endif %}
+                    </div>
+                    <div class="flex-cl">
+                        <p data-localize="duration">30 min</p>
+                        <p data-localize="online_meeting">Online Meeting</p>
+                    </div>
+                </div>
+                <div class="right-side flex-cl justify-between align-end">
+                    <h1 id="confirm-time">{{ start_time }} <br> {{ end_time }}</h1>
+                    <p class="text-right">GMT {{ meeting_request.user_timezone or '00:00' }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-wrap align-center justify-between gap-4">
+            <a class="default" href="/meet/{{ meeting_request.id }}/get_event" id="add-to-calendar" type="button" data-localize="add_to_calendar" data-localize-attr="data-description:downloads_ics_file">
+                Add to calendar
+            </a>
+            {{ tooltip_actions([
+                {
+                    "name": "Copy meeting link",
+                    "name_key": "copy_meeting_link",
+                    "icon": "link-mini",
+                    "hx_get": "/api/copy/" + meeting_request.id|string,
+                },
+                {
+                    "name": "Resend code",
+                    "name_key": "resend_code",
+                    "icon": "mail-mini",
+                    "hx_get": "/api/resend/" + meeting_request.id|string
+                },
+                {
+                    "type": "separator"
+                },
+                {
+                    "type": "button",
+                    "name": "Cancel Meeting",
+                    "id": "cancel-meeting",
+                    "name_key": "cancel_meeting",
+                    "icon": "trash-mini",
+                    "class": "danger",
+                    "hx_get": "/api/cancel/" + meeting_request.id|string,
+                },
+                {
+                    "type": "separator"
+                },
+                {
+                    "type": "explanation",
+                    "name": "Email reminders",
+                    "name_key": "email_reminders",
+                    "desc": "24h and 1h before call",
+                    "desc_key": "reminder_desc",
+                    "icon": "mail-mini",
+                    "hx_get": "/api/reminderer/" + meeting_request.id|string
+                },
+            ]) }}
+        </div>
+    </section>
 </div>
 
-<div class="flex flex-wrap align-center gap-4">
-    <a href="/meet/{{ meeting_request.id }}/get_event" class="default bg-2" id="add-to-calendar" type="button">
-        Add to calendar
-    </a>
-    <button class="default no-bg danger" id="cancel-meeting" type="button" hx-get="/api/cancel/{{ meeting_request.id }}" hx-swap="innerHTML">
-        Cancel Meeting
-    </button>
-    <button class="default no-bg" id="resend-code" type="button" hx-get="/api/resend/{{ meeting_request.id }}" hx-swap="innerHTML">
-        Resend code
-    </button>
-    <button class="default no-bg" id="send-reminder" type="button" hx-get="/api/reminder/{{ meeting_request.id }}" hx-swap="innerHTML">
-        Send reminder
-    </button>  
-    {{ tooltip_actions([
-        {
-            "name": "Cancel Meeting",
-            "class": "danger",
-            "hx_get": "/api/cancel/" + meeting_request.id|string
-        },
-        {
-            "name": "Resend code",
-            "hx_get": "/api/resend/" + meeting_request.id|string
-        }
-    ]) }}
-</div>
+<p style="display: none;">Details</p>
 
 <script>
     document.addEventListener('htmx:afterRequest', function(event) {
         if (event.detail.xhr.status === 200) {
             const response = event.detail.xhr.responseText;
-            if (response.includes('cancelled')) {
+            if (response.includes('Cancelled') || response.includes('Отменен')) {
                 setTimeout(function() {
-                    window.location.href = '/';
+                    window.location.href = '/meet/cancelled';
                 }, 2000);
             }
         }
     });
     $('#resend-code').on('click', function() {
-        this.innerHTML = 'Resending...';
+        this.innerHTML = window.t('resending');
     });
+
+    function animateNumber(element, newValue, oldValue) {
+        const $element = $(element);
+        const formattedNew = String(newValue).padStart(2, '0');
+        const formattedOld = String(oldValue).padStart(2, '0');
+        
+        if (formattedNew !== formattedOld) {
+            $element.css({
+                'transform': 'translateY(-40px) scale(0.7) rotateX(90deg)',
+                'opacity': '0',
+                'transition': 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                'filter': 'blur(2px)'
+            });
+            
+            setTimeout(() => {
+                $element.text(formattedNew);
+                $element.css({
+                    'transform': 'translateY(40px) scale(1.2) rotateX(-90deg)',
+                    'opacity': '0.8',
+                    'transition': 'all 0.15s ease-out',
+                    'filter': 'blur(1px)'
+                });
+                
+                setTimeout(() => {
+                    $element.css({
+                        'transform': 'translateY(0) scale(1) rotateX(0deg)',
+                        'opacity': '1',
+                        'transition': 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                        'filter': 'blur(0px)'
+                    });
+                }, 150);
+            }, 250);
+        }
+    }
+
+    function updateCountdown() {
+        const meetingDate = '{{ meeting_request.calendar_day.date }}';
+        const meetingTime = '{{ meeting_request.time_span.start }}';
+        
+        const meetingHours = Math.floor(meetingTime / 60);
+        const meetingMinutes = meetingTime % 60;
+        const timeString = `${meetingHours.toString().padStart(2, '0')}:${meetingMinutes.toString().padStart(2, '0')}`;
+        
+        const meetingDateTime = new Date(`${meetingDate}T${timeString}`);
+        const now = new Date();
+        const timeDiff = meetingDateTime - now;
+        
+        if (timeDiff <= 0) {
+            $('#countdown-days').text('00');
+            $('#countdown-hours').text('00');
+            $('#countdown-minutes').text('00');
+            $('#countdown-seconds').text('00');
+            return;
+        }
+        
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+        
+        const currentDays = parseInt($('#countdown-days').text()) || 0;
+        const currentHours = parseInt($('#countdown-hours').text()) || 0;
+        const currentMinutes = parseInt($('#countdown-minutes').text()) || 0;
+        const currentSeconds = parseInt($('#countdown-seconds').text()) || 0;
+        
+        animateNumber('#countdown-days', days, currentDays);
+        animateNumber('#countdown-hours', hours, currentHours);
+        animateNumber('#countdown-minutes', minutes, currentMinutes);
+        animateNumber('#countdown-seconds', seconds, currentSeconds);
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
 </script>
 
 {% endblock content %}

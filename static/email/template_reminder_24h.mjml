@@ -15,30 +15,17 @@
   <mj-section background-color="#5f00ff" padding="32px 36px">
     <mj-column>
       <mj-text color="#ffffff" font-size="36px" font-weight="bold" line-height="1.2" padding="0 0 20px 0">
-        <span style="opacity: 0.65">Successfully booked meeting<br/>
-        with </span>SeniWave
+        <span style="opacity: 0.65">Reminding you of meeting <br/>with </span>SeniWave
       </mj-text>
       <mj-table cellpadding="0" cellspacing="0" padding="0">
         <tr style="opacity: 1">
           <td style="padding: 2; width: auto; vertical-align: top;">
             <div style="position: relative; display: inline-block;">
-              <div style="width: 87px; position: relative; z-index: 3; display: inline-block;">
-                <div style="background: #9759ff; border: 3px solid #5f00ff; border-radius: 77px; padding: 19px 0; text-align: center; width: 90px;">
-                  <div class="countdown-days" data-meeting-date="{date}" data-meeting-time="{start_time}" style="font-size: 36px; font-weight: bold; color: white; line-height: 1;">{days}</div>
-                  <div style="font-size: 16px; font-weight: 500; color: white; line-height: 1;">days</div>
+              <div style="width: 87px; position: relative; z-index: 3; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;">
+                <div style="display: inline-block; background: #9759ff; border: 3px solid #5f00ff; border-radius: 99px; padding: 16px 21px; text-align: center; width: fit-content; white-space: nowrap;">
+                  <div data-meeting-time="{start_time}" style="font-size: 48px; font-weight: bold; color: white; line-height: 1;">24 <span style="font-size: 16px; font-weight: 500; color: white; line-height: 1;">hours</span></div>
                 </div>
-              </div>
-              
-              <div style="background: #9759ff; border: 3px solid #5f00ff; border-radius: 17px; padding: 16px 0; text-align: center; width: 80px; position: relative; z-index: 2; margin-left: -8px; display: inline-block;">
-                <div class="countdown-hours" style="font-size: 36px; font-weight: bold; color: white; line-height: 1;">{hours}</div>
-                <div style="font-size: 16px; font-weight: 500; color: white; line-height: 1;">hours</div>
-              </div>
-              
-              <div style="background: #9759ff; border: 3px solid #5f00ff; border-radius: 24px 8px 24px 8px; padding: 14px 0px; margin-left: -8px; text-align: center; width: 80px; transform: rotate(13.8deg); position: relative; z-index: 1; display: inline-block;">
-                <div style="transform: rotate(-13.8deg); margin-bottom: 6px; margin-right: 4px;">
-                  <div class="countdown-minutes" style="font-size: 36px; font-weight: bold; color: white; line-height: 1;">{minutes}</div>
-                  <div style="font-size: 16px; font-weight: 500; color: white; line-height: 1;">minutes</div>
-                </div>
+                <p style="font-size: 16px; font-weight: 500; color:rgba(255, 255, 255, 0.7); line-height: 1; white-space: nowrap; margin: 0; margin-left: 32px; margin-top: 4px; margin-bottom: 32px;">At send time</p>
               </div>
             </div>
           </td>

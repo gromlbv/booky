@@ -18,29 +18,36 @@
             id="calendar-arrow-left"
             data-year="{{ prev_year }}" 
             data-month="{{ prev_month }}"
-            data-description="Previous month">
+            data-localize-attr="data-description:previous_month"
+            data-description="Previous month"
+            hx-get="/calendar/{{ prev_year }}/{{ prev_month }}"
+            hx-target=".right-side.calendar"
+            hx-swap="innerHTML">
             <svg class="secondary-color" style="transform: rotate(180deg);" xmlns="http://www.w3.org/2000/svg" width="9" height="16" viewBox="0 0 9 16" fill="none"><path d="M1 14.5L7.75 7.75L1 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <button 
             id="calendar-arrow-right"
+            data-localize-attr="data-description:next_month"
             data-description="Next month"
             data-year="{{ next_year }}" 
             data-month="{{ next_month }}"
-            data-description="Next month">
+            hx-get="/calendar/{{ next_year }}/{{ next_month }}"
+            hx-target=".right-side.calendar"
+            hx-swap="innerHTML">
             <svg class="secondary-color" xmlns="http://www.w3.org/2000/svg" width="9" height="16" viewBox="0 0 9 16" fill="none"><path d="M1 14.5L7.75 7.75L1 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
     </div>
 </div>
 
-<div class="calendar-grid">
+<div class="calendar-grid" style="overflow: hidden;">
     <div class="weekdays">
-        <button class="weekday" tabindex="-1" data-description="Monday" disabled>Mo</button>
-        <button class="weekday" tabindex="-1" data-description="Tuesday" disabled>Tu</button>
-        <button class="weekday" tabindex="-1" data-description="Wednesday" disabled>We</button>
-        <button class="weekday" tabindex="-1" data-description="Thursday" disabled>Th</button>
-        <button class="weekday" tabindex="-1" data-description="Friday" disabled>Fr</button>
-        <button class="weekday" tabindex="-1" data-description="Saturday" disabled>Sa</button>
-        <button class="weekday" tabindex="-1" data-description="Sunday" disabled>Su</button>
+        <button class="weekday" tabindex="-1" data-localize-attr="data-description:monday" data-description="Monday" disabled>Mo</button>
+        <button class="weekday" tabindex="-1" data-localize-attr="data-description:tuesday" data-description="Tuesday" disabled>Tu</button>
+        <button class="weekday" tabindex="-1" data-localize-attr="data-description:wednesday" data-description="Wednesday" disabled>We</button>
+        <button class="weekday" tabindex="-1" data-localize-attr="data-description:thursday" data-description="Thursday" disabled>Th</button>
+        <button class="weekday" tabindex="-1" data-localize-attr="data-description:friday" data-description="Friday" disabled>Fr</button>
+        <button class="weekday" tabindex="-1" data-localize-attr="data-description:saturday" data-description="Saturday" disabled>Sa</button>
+        <button class="weekday" tabindex="-1" data-localize-attr="data-description:sunday" data-description="Sunday" disabled>Su</button>
     </div>
     
     <div class="days" 

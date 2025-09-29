@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en" data-localize-attr="lang:html_lang">
 
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="module" src="https://lbvo.ru/utils/init.js" async defer></script>
+    <script src="/static/scripts/localize.js"></script>
 
     <link rel="stylesheet" href="/static/styles/main.css">
     <link rel="stylesheet" href="/static/styles/wind.css">
@@ -22,12 +23,10 @@
         <div class="content-wrapper">
             {% block content %}{% endblock content %}
         </div>
-
         {% set messages = get_flashed_messages() %}
         {% for message in messages %}
         <div class="flash-message">
             {{ message|safe }}
-            <!-- <button id="close-flash-message">X</button> -->
         </div>
         {% endfor %}
     </div>

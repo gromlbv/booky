@@ -1,46 +1,62 @@
 def get_celery_app():
     from celery_config import celery_app
     return celery_app
-from mail_service.config import TEMPLATE_PATHS
-from mail_service.utils import load_mjml_template
-from mail_service.template_processor import process_template
-from models import MeetingRequest
-import mjml
+    
+from mail_service.config import ADMIN_EMAIL
+from mail_service.template_processor import process_mjml_template
 
 def send_code(user):
-    user_data = {
-        'email': user.email,
-        'name': user.name,
-        'services': user.services,
-        'message': user.message,
-        'date': user.date,
-        'start_time': user.start_time,
-        'end_time': user.end_time,
-        'code': user.code
-    }
+    user_data = user.to_dict()
+    email = user.email
+    subject = 'Meeting with SeniWave'
+    content = None
+    content = process_mjml_template('mjml_code', user_data)
     
-    meeting_request = MeetingRequest.query.filter_by(meet_code=user.code).first()
-    if not meeting_request:
+    if not content:
         send_fallback_email(user_data)
         return
-    
-    template_path = TEMPLATE_PATHS['mjml_code']
-    mjml_template = load_mjml_template(template_path)
-    
-    if not mjml_template:
-        send_fallback_email(user_data)
-        return
-    
-    template_data = process_template(user_data, meeting_request)
-    mjml_template = mjml_template.format(**template_data)
-    result = mjml.mjml_to_html(mjml_template)
-    content = result['html']
     
     get_celery_app().send_task('send_email', args=[
-        user.email, 'Meeting with SeniWave', content, 'html'
+        email, subject, content
+    ])
+    send_admin(user)
+
+def send_cancel(user):
+    user_data = user.to_dict()
+    email = user.email
+    subject = 'Meeting with SeniWave Canceled'
+    content = process_mjml_template('mjml_cancel', user_data)
+    if not content:
+        return
+    
+    get_celery_app().send_task('send_email', args=[
+        email, subject, content
+    ])
+    send_admin_cancel(user)
+
+def send_reminder_24h(user):
+    user_data = user.to_dict()
+    email = user.email
+    subject = 'Reminding you of your meeting with SeniWave'
+    content = process_mjml_template('mjml_reminder_24h', user_data)
+    
+    get_celery_app().send_task('send_email', args=[
+        email, subject, content
     ])
 
+def send_reminder_1h(user):
+    user_data = user.to_dict()
+    email = user.email
+    subject = 'Meeting with SeniWave — Starts soon!'
+    content = process_mjml_template('mjml_reminder_1h', user_data)
+    
+    get_celery_app().send_task('send_email', args=[
+        email, subject, content
+    ])
+
+
 def send_fallback_email(user_data):
+    email = user_data['email']
     subject = 'Meeting with SeniWave'
     content = f"""
     <h1>Hello, {user_data['name']}!</h1>
@@ -53,10 +69,11 @@ def send_fallback_email(user_data):
     """
     
     get_celery_app().send_task('send_email', args=[
-        user_data['email'], subject, content, 'html'
+        email, subject, content
     ])
 
-def send_report_copy(user):
+def send_report(user):
+    email = user.email
     subject = 'Thank you for your report! (book.seniwave.com)'
     content = f"""\
     <h1>Thank you for your report!</h1>
@@ -68,10 +85,34 @@ def send_report_copy(user):
     """
     
     get_celery_app().send_task('send_email', args=[
-        user.email, subject, content, 'html'
+        email, subject, content
+    ])
+    send_report_admin(user)
+
+
+
+def send_admin(user):
+    user_data = user.to_dict()
+    email = ADMIN_EMAIL
+    subject = 'New Meeting booked'
+    content = process_mjml_template('mjml_admin', user_data)
+    
+    get_celery_app().send_task('send_email', args=[
+        email, subject, content
     ])
 
-def send_report(user):
+def send_admin_cancel(user):
+    user_data = user.to_dict()
+    email = ADMIN_EMAIL
+    subject = f'Meeting {user.code} Canceled'
+    content = process_mjml_template('mjml_admin_cancel', user_data)
+    
+    get_celery_app().send_task('send_email', args=[
+        email, subject, content
+    ])
+
+def send_report_admin(user):
+    email = ADMIN_EMAIL
     subject = 'New report (book.seniwave.com)'
     content = f"""\
     <h1>New report (book.seniwave.com)</h1>
@@ -81,42 +122,5 @@ def send_report(user):
     """
     
     get_celery_app().send_task('send_email', args=[
-        'me@lbvo.ru', 
-        subject, 
-        content, 
-        'html'
-    ])
-    send_report_copy(user)
-
-def send_reminder(user):
-    user_data = {
-        'email': user.email,
-        'name': user.name,
-        'services': user.services,
-        'message': user.message,
-        'date': user.date,
-        'start_time': user.start_time,
-        'end_time': user.end_time,
-        'code': user.code
-    }
-    
-    meeting_request = MeetingRequest.query.filter_by(meet_code=user.code).first()
-    if not meeting_request:
-        send_fallback_email(user_data)
-        return
-    
-    template_path = TEMPLATE_PATHS['mjml_reminder']
-    mjml_template = load_mjml_template(template_path)
-    
-    if not mjml_template:
-        send_fallback_email(user_data)
-        return
-    
-    template_data = process_template(user_data, meeting_request)
-    mjml_template = mjml_template.format(**template_data)
-    result = mjml.mjml_to_html(mjml_template)
-    content = result['html']
-    
-    get_celery_app().send_task('send_email', args=[
-        user.email, 'Reminding you of your meeting with SeniWave', content, 'html'
+        email, subject, content
     ])

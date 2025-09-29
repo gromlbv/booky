@@ -29,6 +29,8 @@ $(document).ready(function() {
         }
     }
 
+    if (!window.calendarData) return;
+    
     let currentYear = window.calendarData.year;
     let currentMonth = window.calendarData.month;
 
@@ -37,42 +39,6 @@ $(document).ready(function() {
         5: 'May', 6: 'June', 7: 'July', 8: 'August', 
         9: 'September', 10: 'October', 11: 'November', 12: 'December'
     };
-    
-    $(document).on('click', '#calendar-arrow-left, #calendar-arrow-right', function() {
-        const isLeft = $(this).attr('id') === 'calendar-arrow-left';
-        
-        if (isLeft) {
-            currentMonth = currentMonth - 1;
-            if (currentMonth < 1) {
-                currentMonth = 12;
-                currentYear--;
-            }
-        } else {
-            currentMonth = currentMonth + 1;
-            if (currentMonth > 12) {
-                currentMonth = 1;
-                currentYear++;
-            }
-        }
-        
-        $(this).closest('.head').find('h3').text(monthNames[currentMonth] + ' ' + currentYear);
-        
-        const daysContainer = $('.days');
-
-        if (daysContainer.length > 0) {
-            daysContainer.attr('hx-get', `/api/calendar/${currentYear}/${currentMonth}`);
-            
-            if (typeof htmx !== 'undefined') {
-                htmx.trigger(daysContainer[0], 'calendarNav');
-                //console.log('htmx trigger sent');
-            } else {
-                daysContainer.load(`/api/calendar/${currentYear}/${currentMonth}`);
-                //console.log('fallback');
-            }
-        } else {
-            //console.error('days container not found');
-        }
-    });
 
     function updateConfirmBlock(date, time, slotId) {
         if (date) {
@@ -104,9 +70,11 @@ $(document).ready(function() {
 
     function showConfirm(){
         $('.confirmation').removeClass('hidden');
+        $('header').addClass('confirmation-open');
     }
     function hideConfirm(){
         $('.confirmation').addClass('hidden');
+        $('header').removeClass('confirmation-open');
     }
 
     
@@ -118,8 +86,6 @@ $(document).ready(function() {
 
         const date = $(this).data('date');
         updateConfirmBlock(date, '', '');
-
-        //console.log('Selected date:', $(this).data('date'));
         
         const timeBlock = $('#time-block');
         if (timeBlock.length > 0) {
@@ -148,11 +114,15 @@ $(document).ready(function() {
         $('.block.date').addClass('hidden');
         hideTimeBlock()
         showConfirm()
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
 
     $(document).on('click', '#return-to-edit', function() {
         setReturnToEdit()
+        setTimeout(() => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }, 60);
     });
 
     $(document).on('submit', '.confirmation', function(e) {
@@ -166,21 +136,25 @@ $(document).ready(function() {
             return false;
         }
         
-         console.log('Form data:', {
-            date: date,
-            slot_id: slot_id,
-            name: $('#name').val(),
-            email: $('#email').val(),
-            services: $('#services').val(),
-            message: $('#message').val()
-        });
-        
         this.submit();
     });
 
     // header scrolling animation
     $(window).scroll(function () {
-        const isScrolled = $(this).scrollTop() > 0;
+        const scrollTop = $(this).scrollTop();
+        const isScrolled = scrollTop > 0;
+        const isScrolled110 = scrollTop > 110;
         $('header').toggleClass('scrolled', isScrolled);
+        $('header').toggleClass('scrolled-110', isScrolled110);
+    });
+
+    // calendar navigation animation
+    $(document).on('click', '#calendar-arrow-left, #calendar-arrow-right', function() {
+        const isLeft = $(this).attr('id') === 'calendar-arrow-left';
+        if (isLeft) {
+            $('.days').addClass('removing left');
+        } else {
+            $('.days').addClass('removing right');
+        }
     });
 });

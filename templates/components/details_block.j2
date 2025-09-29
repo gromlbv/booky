@@ -2,20 +2,28 @@
 {% from 'components/tooltip/select.j2' import select %}
 
 <div class="block details gap-8">
-    <h2>Fill in your details</h2>
+    <h2 data-localize="fill_details">Fill in your details</h2>
 
     <div class="flex-cl gap-4">
-        <label for="name">Your Full Name *</label>
-        <input type="text" autocomplete="name" id="name" name="name" placeholder="Enter your name" required>
+        <label for="name" data-localize="full_name">Your Full Name *</label>
+        <input type="text" autocomplete="name" id="name" name="name" data-localize-attr="placeholder:full_name_placeholder" placeholder="Enter your name" required>
 
-        <label for="email">Email Address *</label>
-        <input type="email" autocomplete="email" id="email" name="email" placeholder="example@mail.com" required>
+        <label for="email" data-localize="email_address">Email Address *</label>
+        <input type="email" autocomplete="email" id="email" name="email" data-localize-attr="placeholder:email_placeholder" placeholder="example@mail.com" required>
 
-        <label for="services">What service you need</label>
-        {{ select("Select services","services",["Branding", "Design System", "Web Development", "3D, AR and AI Animation"])}}
+        <label for="services" data-localize="service_needed">What service you need</label>
+        {{ select("Select services","services",[
+            translate_key('service_branding'),
+            translate_key('service_design_system'),
+            translate_key('service_web_development'),
+            translate_key('service_3d_animation'),
+            {"text": translate_key('service_custom_services'), "type": "description"},
+            translate_key('service_custom_booking'),
+            translate_key('service_video_calling'),
+        ])}}
 
-        <label for="message">What’s your problem?</label>
-        <textarea id="message" name="message" placeholder="What is your challenge?" rows="2"></textarea>
+        <label for="message" data-localize="what_problem">What's your problem?</label>
+        <textarea id="message" name="message" data-localize-attr="placeholder:challenge_placeholder" placeholder="What is your challenge?" rows="2"></textarea>
     </div>
 </div>
 {% endmacro %}

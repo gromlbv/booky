@@ -1,20 +1,18 @@
-from flask import Flask
-from flask import render_template, session, request, redirect, url_for, send_from_directory
-
 import os
+import json
+from os import getenv
+from functools import wraps
+from datetime import datetime, timedelta
+
 import redis
+from flask import Flask, render_template, session, request, redirect, url_for, send_from_directory, jsonify
 
 import mydb as db
 from utils import *
 from mysecurity import verify
-from models import create_app, create_tables, TimeSpan, CalendarDay, MeetingRequest
+from models import create_app, create_tables, TimeSpan, CalendarDay
 from mail_service import MailUser, MailReport
-
 from ics_service.service import create_event
-
-from functools import wraps
-from datetime import datetime, timedelta
-from os import getenv
 
 
 app = Flask(__name__)
@@ -24,10 +22,42 @@ with app.app_context():
     create_tables()
 
 app.secret_key = getenv('SECRET_KEY')
-
+ 
 @app.template_global()
 def format_time_tz(minutes):
     return format_time_with_timezone(minutes)
+
+@app.template_global()
+def format_date_localized_template(date, format_type='short'):
+    lang = get_user_language()
+    return format_date_localized(date, lang, format_type)
+
+def get_user_language():
+    if 'language' in session:
+        return session['language']
+    
+    if request.headers.get('HX-Request'):
+        return session.get('language', 'en')
+    
+    accept_lang = request.headers.get('Accept-Language', 'en')
+    if accept_lang.startswith('ru'):
+        return 'ru'
+    return 'en'
+
+def t(key, lang=None):
+    if lang is None:
+        lang = get_user_language()
+    
+    try:
+        with open('static/translations/translations.json', 'r', encoding='utf-8') as f:
+            translations = json.load(f)
+        return translations.get(lang, {}).get(key, key)
+    except:
+        return key
+
+@app.template_global()
+def translate_key(key, lang=None):
+    return t(key, lang)
 
 @app.before_request
 def make_session_permanent():
@@ -56,7 +86,7 @@ def rate_limit(timeout=1, max_attempts=5, reply=''):
             if not user_ip:
                 return json_response({
                     'type': 'error',
-                    'message': 'Что-то пошло не так <a href="https://seniwave.t.me">Поддержка</a>'
+                    'message': f'{t("something_wrong")} <a href="https://seniwave.t.me">{t("support_link")}</a>'
                 })
 
             counter_key = f"rl_counter:{user_ip}"
@@ -71,7 +101,7 @@ def rate_limit(timeout=1, max_attempts=5, reply=''):
                     return reply
                 return json_response({
                     'type': 'warning',
-                    'message': 'TOO MUCH REQUESTS!'
+                    'message': t('too_much_requests')
                 })
 
             r.setex(user_ip, timeout, "blocked")
@@ -97,8 +127,9 @@ def index():
     if 'meeting_request_id' in session:
         return redirect(url_for('confirmed', id=session['meeting_request_id']))
 
+    user_timezone = get_user_timezone()
     now = datetime.now()
-    return R.index(year=now.year, month=now.month)
+    return R.index(year=now.year, month=now.month, user_timezone=user_timezone)
 
 @app.route('/debug')
 def debug():
@@ -150,6 +181,14 @@ def set_timezone():
     
     return message
 
+@app.post('/set-language')
+def set_language():
+    language = request.form.get("language")
+    if language in ['ru', 'en']:
+        session['language'] = language
+        return 'OK'
+    return 'Invalid language', 400
+
     
 @app.post('/submit')
 def submit_post():
@@ -161,8 +200,6 @@ def submit_post():
     date = request.form.get('date')
     slot_id = request.form.get('slot_id')
     
-    user_timezone = get_user_timezone()
-
     if not email or not name or not date or not slot_id:
         return 'Not all fields are filled or something went wrong'
 
@@ -176,21 +213,23 @@ def submit_post():
         calendar_day = CalendarDay(date=date_obj)
         database.session.add(calendar_day)
 
-    meeting_request = MeetingRequest(
+    from models import MeetingRequest
+    m = MeetingRequest(
         name=name, 
         email=email,
         services=services_str,
         message=message,
         time_span=time_span,
-        calendar_day=calendar_day
+        calendar_day=calendar_day,
+        user_timezone=get_user_timezone()
     )
 
-    code = meeting_request.set_meet_code()
-    database.session.add(meeting_request)
+    code = m.set_meet_code()
+    database.session.add(m)
     database.session.commit()
     start_time = format_time(time_span.start)
     end_time = format_time(time_span.end)
-    session['meeting_request_id'] = meeting_request.id
+    session['meeting_request_id'] = m.id
     
     mail_user = MailUser(
         email=email,
@@ -200,35 +239,36 @@ def submit_post():
         date=date,
         start_time=start_time,
         end_time=end_time,
-        code=code)
+        code=code,
+        meeting_id=m.id
+    )
 
     mail_user.send_code()
     
-    return redirect(url_for('confirmed', id=meeting_request.id))
+    return redirect(url_for('confirmed', id=m.id))
 
 
 @app.route('/meet/<id>')
 def confirmed(id):
-    meeting_request = MeetingRequest.query.filter_by(id=id).first()
-    if not meeting_request:
+    m = db.get_meeting_request(id)
+    if not m:
         session_meeting_request_id = session.get('meeting_request_id', None)
         if session_meeting_request_id == id:
             session.pop('meeting_request_id', None)
-        return 'Meeting request not found'
+            return redirect(url_for('index'))
+        return R.meeting_not_found()
 
-    date = meeting_request.calendar_day.date
-    start_time = meeting_request.time_span.start
-    end_time = meeting_request.time_span.end
+    date = m.calendar_day.date
+    start_time = m.time_span.start
+    end_time = m.time_span.end
 
-    adjusted_date = format_date_timezone(date, start_time, end_time)
-    adjusted_start_time = format_time_timezone(start_time)
-    adjusted_end_time = format_time_timezone(end_time)
-
-    date = adjusted_date
+    timezone = m.user_timezone
+    adjusted_start_time = format_time_timezone(start_time, timezone)
+    adjusted_end_time = format_time_timezone(end_time, timezone)
     start_time = adjusted_start_time
     end_time = adjusted_end_time
 
-    return R.confirmed(meeting_request=meeting_request, date=date, start_time=start_time, end_time=end_time)
+    return R.confirmed(meeting_request=m, date=date, start_time=start_time, end_time=end_time)
 
 
 # API
@@ -240,19 +280,33 @@ import calendar
 @rate_limit(timeout=5, max_attempts=1)
 @app.route("/api/cancel/<id>")
 def cancel_meeting(id):
-    meeting_request = MeetingRequest.query.filter_by(id=id).first()
-    if not meeting_request:
-        return 'Meeting request not found', 400
-    meeting_request.cancel()
+    m = db.get_meeting_request(id)
+    if not m:
+        return t('meeting_not_found'), 400
+
+    mail_user = MailUser(
+        email=m.email,
+        name=m.name,
+        services=m.services,
+        message=m.message,
+        date=m.calendar_day.date,
+        start_time=m.time_span.start,
+        end_time=m.time_span.end,
+        code=m.meet_code,
+        meeting_id=m.id
+    )
+    mail_user.send_cancel()
+    m.cancel()
     session.pop('meeting_request_id', None)
-    return 'Meeting cancelled! Redirecting...'
+
+    return t('meeting_cancelled')
 
 @rate_limit(timeout=60, max_attempts=1, reply='Next one in 60 seconds')
 @app.route("/api/resend/<id>")
 def resend_code(id):
-    m = MeetingRequest.query.filter_by(id=id).first()
+    m = db.get_meeting_request(id)
     if not m:
-        return 'Meeting request not found', 400    
+        return t('meeting_not_found'), 400    
 
     date = format_date(m.calendar_day.date)
     start_time = format_time(m.time_span.start)
@@ -266,18 +320,19 @@ def resend_code(id):
         date=date,
         start_time=start_time,
         end_time=end_time,
-        code=m.meet_code
+        code=m.meet_code,
+        meeting_id=m.id
     )
     mail_user.send_code()
 
-    return 'Mail resent'
+    return t('mail_resent')
 
 
 @app.route("/api/reminder/<id>")
 def reminder(id):
-    m = MeetingRequest.query.filter_by(id=id).first()
+    m = db.get_meeting_request(id)
     if not m:
-        return 'Meeting request not found', 400
+        return t('meeting_not_found'), 400
 
     date = format_date(m.calendar_day.date)
     start_time = format_time(m.time_span.start)
@@ -291,28 +346,29 @@ def reminder(id):
         date=date,
         start_time=start_time,
         end_time=end_time,
-        code=m.meet_code
+        code=m.meet_code,
+        meeting_id=m.id
     )
-    mail_user.send_reminder()
+    mail_user.send_reminder_24h()
 
-    return 'Reminder sent'
+    return t('reminder_sent')
 
 @app.route("/api/available")
 def available_slots():
-    date_str = request.args.get("date")  # format 2025-08-05
+    date_str = request.args.get("date")
     if date_str is not None:
         dow = datetime.strptime(date_str, "%Y-%m-%d").weekday()
     else:
-        return "<p>Choose a date</p>"
+        return f"<p>{t('choose_date_htmx')}</p>"
     
     day_of_week = DayOfWeek.query.filter_by(id=dow + 1).first()
     if not day_of_week or not day_of_week.is_working:
-        return "<p>No working slots this day</p>"
+        return f"<p>{t('no_working_slots')}</p>"
 
     time_spans = db.get_available_time_spans(dow)
 
     if not time_spans:
-        return "<p>No available slots</p>"
+        return f"<p>{t('no_available_slots')}</p>"
 
     html = "<ul>"
     for span in time_spans:
@@ -325,6 +381,9 @@ def available_slots():
 
 @app.route("/api/time-slots/<date>")
 def get_time_slots(date):
+    if not date or date == 'None' or date == 'null':
+        return f"<p>{t('select_date_htmx')}</p>"
+    
     try:
         date_obj = datetime.strptime(date, "%Y-%m-%d")
         dow = date_obj.weekday()
@@ -332,8 +391,8 @@ def get_time_slots(date):
         day_of_week = DayOfWeek.query.filter_by(id=dow + 1).first()
         if not day_of_week or not day_of_week.is_working:
             return f'''
-                <p>Then, select a time period for <span>{date}</span></p>
-                <p class="no-slots">No available time slots for this date</p>
+                <p>{t('select_time_period_htmx')} <span>{date}</span></p>
+                <p class="no-slots">{t('no_slots_date')}</p>
             '''
         
         time_spans = TimeSpan.query.filter_by(
@@ -353,19 +412,19 @@ def get_time_slots(date):
         
         if not slots:
             return f'''
-                <p>Then, select a time period for <span>{date}</span></p>
-                <p class="no-slots">No available time slots for this date</p>
+                <p>{t('select_time_period_htmx')} <span>{date}</span></p>
+                <p class="no-slots">{t('no_slots_date')}</p>
             '''
 
         is_day_off = DayOfWeek.query.filter_by(id=dow + 1).first().is_working == False
         if is_day_off:
             return f'''
-                <p>Then, select a time period for <span>{date}</span></p>
-                <p class="no-slots">This day is off</p>
+                <p>{t('select_time_period_htmx')} <span>{format_date_localized(date_obj, get_user_language(), 'short')}</span></p>
+                <p class="no-slots">{t('day_off')}</p>
             '''
         
         html = f'''
-            <p>Then, select a time period for <span>{date}</span></p>
+            <p>{t('select_time_period_htmx')} <span>{format_date_localized(date_obj, get_user_language(), 'short')}</span></p>
             <div class="time-slots">'''
         
         for slot in slots:
@@ -383,8 +442,12 @@ def get_time_slots(date):
         return html
         
     except ValueError:
-        return "<p>Select date to continue</p>"
+        return f"<p>{t('select_date_htmx')}</p>"
 
+
+@app.route("/calendar/<int:year>/<int:month>")
+def calendar_page(year, month):
+    return render_template("calendar_only.j2", year=year, month=month)
 
 @app.route("/api/calendar/<int:year>/<int:month>")
 def get_calendar(year, month):        
@@ -406,8 +469,11 @@ def get_calendar(year, month):
                 
                 day_of_week = DayOfWeek.query.filter_by(id=dow + 1).first()
                 is_available = day_of_week and day_of_week.is_working
-                
                 is_today = is_current_month and today.day == day
+                if date_obj.date() < today.date():
+                    is_available = False
+                if is_today:
+                    is_available = False
                 
                 classes = ["day"]
                 if is_available:
@@ -419,11 +485,11 @@ def get_calendar(year, month):
                 disabled = "" if is_available else "disabled"
                 
                 if is_today:
-                    description = "Today"
+                    description = t("today")
                 elif is_available:
-                    description = "Available for booking"
+                    description = t("available_booking")
                 else:
-                    description = "Not available"
+                    description = t("not_available")
                 
                 html += f'''<button 
                     class="{class_str}" 
@@ -451,18 +517,27 @@ def get_date_availabiltiy(date_str):
 
 @app.get('/meet/<id>/get_event')
 def get_event(id):
-    meeting_request = MeetingRequest.query.filter_by(id=id).first()
-    if not meeting_request:
+    m = db.get_meeting_request(id)
+    if not m:
         return 'Meeting request not found', 400
     
     file_path = f'ics_service/events/{id}.ics'
     if not os.path.exists(file_path):
-        create_event(meeting_request)
+        create_event(m)
     
     return send_from_directory(
         directory='ics_service/events',
         path=f'{id}.ics'
     )
+
+@app.route('/api/translations')
+def get_translations():
+    try:
+        with open('static/translations/translations.json', 'r', encoding='utf-8') as f:
+            translations = json.load(f)
+        return jsonify(translations)
+    except Exception as e:
+        return jsonify({'error': 'Failed to load translations'}), 500
 
 
 
@@ -518,12 +593,54 @@ def init_spans():
     database.session.commit()
 
     return "<span class='post-result' id='span-status'>DONE</span>"
+    
 
+@app.route(f'/meet/<string:meet_id>/api/countdown')
+@rate_limit(timeout=1, max_attempts=10)
+def api_countdown(meet_id):
+    cache_key = f"countdown:{meet_id}"
+    cached_result = r.get(cache_key)
+    
+    if cached_result:
+        return cached_result
+    
+    m = db.get_meeting_request(meet_id)
+    if not m:
+        result = json.dumps({'days': 0, 'hours': 0, 'minutes': 0, 'seconds': 0})
+        r.setex(cache_key, 1, result)
+        return result
 
+    meeting_date = m.calendar_day.date
+    start_minutes = m.time_span.start
+    meeting_time = datetime.min.time().replace(
+        hour=start_minutes // 60,
+        minute=start_minutes % 60
+    )
+    
+    event_date = datetime.combine(meeting_date, meeting_time)
+    now = datetime.now()
+    time_diff = event_date - now
+    
+    if time_diff.total_seconds() <= 0:
+        days = hours = minutes = seconds = 0
+    else:
+        days = time_diff.days
+        hours, remainder = divmod(time_diff.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+    
+    result = json.dumps({
+        'days': days,
+        'hours': hours,
+        'minutes': minutes,
+        'seconds': seconds
+    })
+    
+    r.setex(cache_key, 1, result)
+    return result
 
-
-
-
+@app.errorhandler(404)
+def page_not_found(e):
+    return R.page_not_found()
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5300, host='0.0.0.0')
+    app.run(debug=True, port=5300, host='0.0.0.0', threaded=True)

@@ -9,6 +9,8 @@ SMTP_CONFIG = {
     'sender':   'noreply@seniwave.com'
 }
 
+ADMIN_EMAIL = 'me@lbvo.ru'
+
 CELERY_CONFIG = {
     'broker': getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0'),
     'result_backend': getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0'),
@@ -30,6 +32,10 @@ CELERY_CONFIG = {
 }
 
 TEMPLATE_PATHS = {
-    'mjml_reminder': os.path.join('static', 'email', 'template_reminder.mjml'),
-    'mjml_code': os.path.join('static', 'email', 'template_code.mjml')
+    'mjml_reminder_24h': os.path.join('static', 'email', 'template_reminder_24h.mjml'),
+    'mjml_reminder_1h': os.path.join('static', 'email', 'template_reminder_1h.mjml'),
+    'mjml_code': os.path.join('static', 'email', 'template_code.mjml'),
+    'mjml_admin': os.path.join('static', 'email', 'template_admin.mjml'),
+    'mjml_cancel': os.path.join('static', 'email', 'template_cancel.mjml'),
+    'mjml_admin_cancel': os.path.join('static', 'email', 'template_admin_cancel.mjml')
 }

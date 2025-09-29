@@ -1,13 +1,11 @@
 {% macro time_block() %}
 <div class="time block" id="time-block" 
-     hx-get="/api/time-slots/{{ date or 'None' }}" 
-     hx-trigger="load"
      hx-target="this"
      hx-swap="innerHTML">
-    <p>Something went wrong... <a href="https://lbv_dev.t.me">Contact support</a></p>
+    <p data-localize="select_date">Select a date to continue</p>
 </div>
 <div id="time-block-next">
-    <p>select a time period to continue</p>
-    <button class="accent">Continue</button>
+    <p data-localize="select_time_period">select a time period to continue</p>
+    <button class="accent" data-localize="continue">Continue</button>
 </div>
 {% endmacro %}

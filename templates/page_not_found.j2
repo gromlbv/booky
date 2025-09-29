@@ -1,0 +1,11 @@
+{% extends 'index.j2' %}
+{% from 'components/status-block.j2' import status_block %}
+
+{% block title %}Page Not Found{% endblock title %}
+{% block content %}
+
+{{ status_block("Page not found", "/static/images/404-banner.png", [
+    {"text": "Jump into booking", "link": "/", "class": "primary"}
+]) }}
+
+{% endblock content %}

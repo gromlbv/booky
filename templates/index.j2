@@ -8,12 +8,12 @@
 {% from 'components/icons.j2' import icon %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-localize-attr="lang:html_lang">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Book meeting with Seniwave</title>
+    <title data-localize="page_title">Book meeting with Seniwave</title>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
@@ -33,15 +33,19 @@
     <header class="flex-between w-100">
         <div class="flex">
             {% block back_button %}
-            <a id="back-button" class="no-fill circle" href="https://seniwave.com" data-description="Back to SeniWave">
+            <a id="back-button" class="no-fill circle" href="https://seniwave.com" data-description="Back to SeniWave" data-localize-attr="data-description:back_description">
                 {{ icon("back", "secondary-color") }}
             </a>
             {% endblock back_button %}
-            <div class="mobile-only">
-
+            <div class="mobile-only flex gap-12 align-center">
+                <img class="logo-animated" src="/static/logos/default.svg" alt="Purple logo with blue wave">
+                <div class="flex-cl">
+                    <h3 data-localize="header_title">Book a Meeting</h3>
+                    <p data-localize="header_subtitle">with Seniwave</p>
+                </div>
             </div>
         </div>
-        <button class="no-fill circle toggle-menu" data-description="Menu">
+        <button class="no-fill circle toggle-menu" data-localize-attr="data-description:menu" data-description="Menu">
             {{ icon("menu", "secondary-color") }}
         </button>
     </header>
@@ -56,7 +60,7 @@
                 <input type="hidden" id="hidden-slot-id" name="slot_id" value="">
                 {{ confirm_block("", "") }}
                 {{ details_block() }}
-                <button class="accent" type="submit">
+                <button class="accent" type="submit" data-localize="confirm">
                     Confirm
                     {{ icon("check2", "contrast-to-accent") }}
                 </button>
@@ -67,11 +71,14 @@
     </div>
 
     <script>
+        {% if year and month %}
         window.calendarData = {
             year: {{ year }},
             month: {{ month }}
         };
+        {% endif %}
     </script>
+    <script src="/static/scripts/localize.js"></script>
     <script src="/static/scripts/main.js"></script>
     <script src="/static/scripts/tooltip.js"></script>
 </body>

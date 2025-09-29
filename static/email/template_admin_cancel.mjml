@@ -1,0 +1,80 @@
+<mjml>
+<mj-head>
+  <mj-title>Meeting with SeniWave</mj-title>
+    <mj-style>
+      @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+    </mj-style>
+  <mj-attributes>
+    <mj-all font-family="Manrope, Arial, sans-serif"/>
+  </mj-attributes>
+  <mj-raw>
+    <script src="https://book.seniwave.com/static/scripts/countdown.js"></script>
+  </mj-raw>
+</mj-head>
+<mj-body background-color="#ffffff">
+  <mj-section padding="32px">
+    <mj-column>
+      <mj-text font-size="32px" font-weight="700" color="#1e1e1e" line-height="1.4" padding="0">
+        Meeting {meeting_code} <span style="color: #e94235;">Canceled</span>
+      </mj-text>
+      <mj-divider border-color="#e0e0e0" border-width="1px" padding="36px 0" />
+      <mj-text font-size="24px" font-weight="bold" color="#1e1e1e" padding="0 0 24px 0">
+        Details
+      </mj-text>
+      <mj-table cellpadding="0" cellspacing="0" padding="0">
+        <tr>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5);">Date</td>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5); text-align: right;">{date}</td>
+        </tr>
+        <tr>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5);">Time</td>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5); text-align: right;">{start_time}-{end_time}</td>
+        </tr>
+        <tr>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5);">Duration</td>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5); text-align: right;">{duration}</td>
+        </tr>
+        <tr>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5);">Meeting Code</td>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5); text-align: right;">{meeting_code}</td>
+        </tr>
+      </mj-table>
+      <mj-divider border-color="#e0e0e0" border-width="1px" padding="12px 0" />
+      <mj-table cellpadding="0" cellspacing="0" padding="0">
+        <tr>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5);">Services</td>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5); text-align: right;">{services}</td>
+        </tr>
+        <tr>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5);">Message</td>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5); text-align: right;">{message}</td>
+        </tr>
+        <tr>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5);">User timezone</td>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5); text-align: right;">{user_timezone}</td>
+        </tr>
+      </mj-table>
+      <mj-text font-size="24px" font-weight="bold" color="#1e1e1e" padding="17px 0 24px 0">
+        Person contact data
+      </mj-text>
+      <mj-table cellpadding="0" cellspacing="0" padding="0">
+        <tr>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5);">Name</td>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5); text-align: right;">{name}</td>
+        </tr>
+        <tr>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5);">Email</td>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5); text-align: right;">{email}</td>
+        </tr>
+      </mj-table>
+
+      <mj-divider border-color="#e0e0e0" border-width="1px" padding="36px 0" />
+
+      <mj-text font-size="16px" font-weight="500" color="rgba(30,30,30,0.36)" line-height="1.4" padding="0 0 32px 0">
+        This email was sent automatically by SeniWave booking system.<br/>
+        For more information about how we handle your data, please visit our <a href="#" style="color: rgba(30,30,30,0.64); text-decoration: underline;">Privacy Policy</a>.
+      </mj-text>
+    </mj-column>
+  </mj-section>
+</mj-body>
+</mjml>

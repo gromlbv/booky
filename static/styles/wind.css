@@ -3,7 +3,8 @@
 .flex-wrap{flex-wrap: wrap}
 .align-center{align-items: center}
 .align-end{align-items: flex-end}
-.justify-between {justify-content: space-between;height: 100%}
+.justify-between {justify-content: space-between}
+.justify-center{justify-content: center}
 .flex-between{display: flex;justify-content: space-between}
 .gap-96{gap: 96px;}
 .gap-64{gap: 64px;}
@@ -20,5 +21,8 @@
 .w-fit{width: fit-content;}
 .h-100{height: 100%;}
 .p-8-0 {padding: 8px 0;}
+.p-0-32 {padding: 0 32px;}
 .p-8-4 {padding: 8px 4px;}
 .text-right{text-align: right;white-space: nowrap;}
+.opacity-05{opacity: 0.5;}
+.max-w-320{max-width: 320px;}

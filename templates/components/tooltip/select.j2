@@ -1,14 +1,19 @@
 {% macro select(title, name, options) %}
 <div class="select flex-cl">
-    <button class="head flex align-center justify-between gap-48" id="{{ name }}" type="button">{{ title }}<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none"><path d="M1.5 1L6 5L10.5 1" stroke="white" stroke-opacity="0.24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="head flex align-center justify-between gap-48" id="{{ name }}" type="button" data-localize="select_services">{{ title }}<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none"><path d="M1.5 1L6 5L10.5 1" stroke="white" stroke-opacity="0.24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="options">
         {% for option in options %}
-            <button class="option ignore-defaults" name="{{ name }}" type="button"><span>{{ option }}</span>
-            <span class="icon">
-                <img class="check invert-on-white" src="/static/icons/check.svg" alt="checked">
-                <img class="plus invert-on-white" src="/static/icons/plus.svg" alt="plus">
-            </span>
-            </button>
+            {% if option.type == "description" %}
+                <p class="option-description">{{ option.text if option.text else option }}</p>
+            {% else %}
+                <button class="option ignore-defaults" name="{{ name }}" type="button">
+                <span>{{ option.text if option.text else option }}</span>
+                <span class="icon">
+                    <img class="check invert-on-white" src="/static/icons/check.svg" alt="checked">
+                    <img class="plus invert-on-white" src="/static/icons/plus.svg" alt="plus">
+                </span>
+                </button>
+            {% endif %}
         {% endfor %}
     </div>
 </div>
@@ -40,7 +45,7 @@
         height: 0;
         overflow: hidden;
         transform-origin: top;
-        transform: scaleY(0.75);
+        transform: szleY(0.75);
         transition: height 0.3s ease, padding 0s ease, transform 0.3s ease;
     }
     .options.open{
@@ -106,6 +111,13 @@
         opacity: 0;
         transition: opacity 0.6s, transform 0.3s;
     }
+    .option-description{
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px 12px 2px 12px;
+        text-align: start;
+        font-size: 14px;
+    }
 }
 .select button:active{
     transform: scale(1) !important;
@@ -120,12 +132,12 @@
 }
 
 @media (min-width: 640px) {
-.option.selected:active .icon{
-    background-color: #e9413522 !important;
-    .plus{
-        transform: translate(-50%, -50%) rotate(45deg) !important;
+    .option.selected:active .icon{
+        background-color: #e9413522 !important;
+        .plus{
+            transform: translate(-50%, -50%) rotate(45deg) !important;
+        }
     }
-}
 }
 </style>
 
@@ -172,11 +184,11 @@
                 selectedTexts.push(text);
             });
             if (selectedTexts.length === 0) {
-                $head.contents().first().replaceWith($head.data('original-text') || 'Select services');
+                $head.contents().first().replaceWith($head.data('original-text') || window.t('select_services'));
             } else if (selectedTexts.length === 1) {
                 $head.contents().first().replaceWith(selectedTexts[0]);
             } else {
-                $head.contents().first().replaceWith(`${selectedTexts.length} selected`);
+                $head.contents().first().replaceWith(`${selectedTexts.length} ${window.t('selected')}`);
             }
             
             const inputName = $head.attr('id');

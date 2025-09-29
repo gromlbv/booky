@@ -1,7 +1,7 @@
 {% macro tooltip_actions(actions=[]) %}
-
-<button class="action-button default circle ignore-defaults" data-action="actions" style="text-">
-···
+{% from 'components/icons.j2' import icon %}
+<button class="action-button default ignore-defaults gap-12" data-action="actions" data-localize="options">
+Options {{ icon("options", "secondary-fill") }}
 <div class="action-content">
     {% for action in actions %}
         {{ tooltip_action(action) }}
@@ -21,13 +21,19 @@
     });
     // if cursor is off the action-button
     let closeTimer;
+    let fadeTimer;
     $(document).on('mouseleave', '.action-button', function() {
+        fadeTimer = setTimeout(function() {
+            $('.action-content').stop(true, true).animate({ opacity: 0 }, 800);
+        }, 600);
         closeTimer = setTimeout(function() {
             $('.action-content').removeClass('open');
-        }, 800);
+        }, 1400);
     });
     $(document).on('mouseenter', '.action-button', function() {
+        clearTimeout(fadeTimer);
         clearTimeout(closeTimer);
+        $('.action-content').stop(true, true).animate({ opacity: 1 }, 200);
     });
     // click outside the action-content
     $(document).on('click', function(e) {
@@ -39,5 +45,31 @@
 {% endmacro %}
 
 {% macro tooltip_action(action) %}
-<a class="action {{ action.class }} ignore-defaults" hx-swap="innerHTML" hx-get="{{ action.hx_get }}">{{ action.name }}</a>
+{% from 'components/icons.j2' import icon %}
+
+{% if action.type == "separator" %}
+    <hr class="action-separator">
+{% else %}
+    <a class="action {{ action.class }} ignore-defaults" id="{{ action.id }}" type="button"
+    hx-swap="innerHTML" hx-get="{{ action.hx_get }}">
+    <span class="flex-cl action-text">
+    {% if action.name_key %}
+        <span data-localize="{{ action.name_key }}">{{ action.name }}</span>
+    {% else %}
+        {{ action.name }}
+    {% endif %}
+    {% if action.desc %}
+        {% if action.desc_key %}
+        <p class="action-desc" data-localize="{{ action.desc_key }}">{{ action.desc }}</p>
+        {% else %}
+        <p class="action-desc">{{ action.desc }}</p>
+        {% endif %}
+    {% endif %}
+    </span>
+    {% if action.icon %}
+        {{ icon(action.icon, "secondary-color") }}
+    {% endif %}
+    </a>
+{% endif %}
+
 {% endmacro %}

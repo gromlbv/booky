@@ -1,0 +1,10 @@
+{% extends 'index.j2' %}
+{% from 'components/status-block.j2' import status_block %}
+
+{% block title %}Meeting canceled{% endblock title %}
+{% block content %}
+{{ status_block("Meeting canceled", description="You can book new meeting, or leave this page", image="/static/images/404-banner.png", buttons=[
+    {"text": "Jump into booking", "link": "/", "class": "primary"}
+]) }}
+
+{% endblock content %}

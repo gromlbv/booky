@@ -1,7 +1,7 @@
 {% extends 'index.j2' %}
 
 {% block back_button %}
-<a class="no-fill circle" href="/" data-description="Back to booking">
+<a class="no-fill circle" href="/" data-localize-attr="data-description:back_to_booking" data-description="Back to booking">
     <img src="/static/icons/arrow.svg" style="transform: rotate(180deg);">
 </a>
 {% endblock back_button %}
@@ -10,15 +10,15 @@
 <form class="flex-cl gap-24 align-center"
     hx-post="/report" hx-target="#report-form" hx-swap="outerHTML" id="report-form">
     <div class="block report flex-cl gap-0">
-        <h1>Report bug</h1>
-        <label for="name" required>Name</label>
-        <input type="text" name="name" id="name" placeholder="Name">
-        <label for="email" required>Email</label>
-        <input type="email" name="email" id="email" placeholder="Email">
-        <label for="message" required>What is the issue?</label>
-        <input type="text" name="message" id="message" placeholder="Describe the issue">
+        <h1 data-localize="report_bug">Report bug</h1>
+        <label for="name" required data-localize="name">Name</label>
+        <input type="text" name="name" id="name" data-localize-attr="placeholder:name_placeholder" placeholder="Name">
+        <label for="email" required data-localize="email">Email</label>
+        <input type="email" name="email" id="email" data-localize-attr="placeholder:email_placeholder_report" placeholder="Email">
+        <label for="message" required data-localize="what_issue">What is the issue?</label>
+        <input type="text" name="message" id="message" data-localize-attr="placeholder:describe_issue" placeholder="Describe the issue">
     </div>
-    <button class="accent" type="submit">Report</button>
+    <button class="accent" type="submit" data-localize="report_button">Report</button>
 </form>
 
 {% endblock content %}

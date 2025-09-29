@@ -15,38 +15,24 @@
   <mj-section background-color="#5f00ff" padding="32px 36px">
     <mj-column>
       <mj-text color="#ffffff" font-size="36px" font-weight="bold" line-height="1.2" padding="0 0 20px 0">
-        <span style="opacity: 0.65">Jump in meeting<br/>
-        with </span>SeniWave
+        <span style="opacity: 0.65">Meeting with </span>SeniWave<br/>Starts soon!
       </mj-text>
       <mj-table cellpadding="0" cellspacing="0" padding="0">
         <tr style="opacity: 1">
           <td style="padding: 2; width: auto; vertical-align: top;">
             <div style="position: relative; display: inline-block;">
               <div style="width: 87px; position: relative; z-index: 3; display: inline-block;">
-                <div style="background: #9759ff; border: 3px solid #5f00ff; border-radius: 77px; padding: 19px 0; text-align: center; width: 90px;">
-                  <div class="countdown-days" data-meeting-date="{date}" data-meeting-time="{start_time}" style="font-size: 36px; font-weight: bold; color: white; line-height: 1;">{days}</div>
-                  <div style="font-size: 16px; font-weight: 500; color: white; line-height: 1;">days</div>
-                </div>
-              </div>
-              
-              <div style="background: #9759ff; border: 3px solid #5f00ff; border-radius: 17px; padding: 16px 0; text-align: center; width: 80px; position: relative; z-index: 2; margin-left: -8px; display: inline-block;">
-                <div class="countdown-hours" style="font-size: 36px; font-weight: bold; color: white; line-height: 1;">{hours}</div>
-                <div style="font-size: 16px; font-weight: 500; color: white; line-height: 1;">hours</div>
-              </div>
-              
-              <div style="background: #9759ff; border: 3px solid #5f00ff; border-radius: 24px 8px 24px 8px; padding: 14px 0px; margin-left: -8px; text-align: center; width: 80px; transform: rotate(13.8deg); position: relative; z-index: 1; display: inline-block;">
-                <div style="transform: rotate(-13.8deg); margin-bottom: 6px; margin-right: 4px;">
-                  <div class="countdown-minutes" style="font-size: 36px; font-weight: bold; color: white; line-height: 1;">{minutes}</div>
-                  <div style="font-size: 16px; font-weight: 500; color: white; line-height: 1;">minutes</div>
+                <div style="display: inline-block; background: #9759ff; border: 3px solid #5f00ff; border-radius: 99px; padding: 16px 21px; text-align: center; width: fit-content; white-space: nowrap;">
+                  <div data-meeting-time="{start_time}" style="font-size: 48px; font-weight: bold; color: white; line-height: 1;">{start_time} <span style="font-size: 16px; font-weight: 500; color: white; line-height: 1;">today</span></div>
                 </div>
               </div>
             </div>
           </td>
         </tr>
       </mj-table>
-      <mj-button background-color="#ffffff" color="#5f00ff" font-size="36px" font-weight="800" border-radius="50px" padding="17px 0" href="https://meet.seniwave.com/rooms/{meeting_code}" align="left">
-        Join
-        <mj-image src="http://book.seniwave.com/static/email/arrow.svg" alt="Arrow" width="24px" height="24px" padding-left="48px"/>
+      <mj-button background-color="#ffffff" color="#5f00ff" font-size="36px" font-weight="800" border-radius="50px" padding="17px 0" href="https://book.seniwave.com/meet/{meeting_id}" align="left">
+        Check
+        <mj-image src="http://book.seniwave.com/static/email/arrow.svg" alt="Arrow" width="24px" height="24px" padding-left="42px"/>
       </mj-button>
     </mj-column>
   </mj-section>
@@ -61,7 +47,7 @@
             <a href="https://book.seniwave.com/meet/{meeting_id}" style="background: rgba(95,0,255,0.08); border-radius: 36px; padding: 12px 18px; display: inline-block; text-decoration: none; margin-right: 8px; margin-bottom: 8px;">
               <span style="font-size: 21px; font-weight: 600; color: #5f00ff;">View details</span>
             </a>
-            <a href="#" style="background: rgba(95,0,255,0.08); border-radius: 36px; padding: 12px 18px; display: inline-block; text-decoration: none;">
+            <a href="https://book.seniwave.com/meet/{meeting_id}/get_event" style="background: rgba(95,0,255,0.08); border-radius: 36px; padding: 12px 18px; display: inline-block; text-decoration: none;">
               <span style="font-size: 21px; font-weight: 600; color: #5f00ff;">Add to calendar</span>
             </a>
           </td>
@@ -99,7 +85,7 @@
         </tr>
         <tr>
           <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5);">Email</td>
-          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5); text-align: right;">{email_masked}</td>
+          <td style="padding: 0 0 12px 0; font-size: 18px; font-weight: 500; color:rgba(30, 30, 30, 0.5); text-align: right;">{email}</td>
         </tr>
       </mj-table>
       
