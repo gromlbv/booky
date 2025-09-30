@@ -1,6 +1,9 @@
 # Configs
 # celery_config.py
 
+# Celery
+celerybeat-schedule*
+
 # Database
 ics_service/events/
 
