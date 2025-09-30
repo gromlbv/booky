@@ -60,10 +60,13 @@
             </a>
             {{ tooltip_actions([
                 {
+                    "type": "button",
                     "name": "Copy meeting link",
                     "name_key": "copy_meeting_link",
                     "icon": "link-mini",
-                    "hx_get": "/api/copy/" + meeting_request.id|string,
+                    "class": "copy-button",
+                    "id": "copy-meeting-link",
+                    "copy_link": "https://meet.seniwave.com/rooms/" + meeting_request.id|string,
                 },
                 {
                     "name": "Resend code",
@@ -75,7 +78,6 @@
                     "type": "separator"
                 },
                 {
-                    "type": "button",
                     "name": "Cancel Meeting",
                     "id": "cancel-meeting",
                     "name_key": "cancel_meeting",
@@ -106,10 +108,10 @@
     document.addEventListener('htmx:afterRequest', function(event) {
         if (event.detail.xhr.status === 200) {
             const response = event.detail.xhr.responseText;
-            if (response.includes('Cancelled') || response.includes('Отменен')) {
+            if (response.includes('Canceled') || response.includes('отменена')) {
                 setTimeout(function() {
-                    window.location.href = '/meet/cancelled';
-                }, 2000);
+                    window.location.href = '/meet/canceled';
+                }, 200);
             }
         }
     });

@@ -3,15 +3,15 @@
 <img src="{{ image }}" alt="{{ title }}" width="250">
 {% if description %}
     <div class="flex-cl gap-12 align-center">
-        <h1>{{ title }}</h1>
-        <p style="color: var(--subtle-color);">{{ description }}</p>
+        <h1 data-localize="{{ title }}">{{ title }}</h1>
+        <p style="color: var(--subtle-color);" data-localize="{{ description }}">{{ description }}</p>
     </div>
 {% else %}
-    <h1>{{ title }}</h1>
+    <h1 data-localize="{{ title }}">{{ title }}</h1>
 {% endif %}
 <div class="flex flex-wrap gap-6 justify-center">
     {% for button in buttons %}
-    <a href="{{ button.link }}" class="default {{ button.class }}">{{ button.text }}</a>
+    <a href="{{ button.link }}" class="default {{ button.class }}" data-localize="{{ button.data_localize }}">{{ button.data_localize }}</a>
     {% endfor %}
 </div>
 </div>

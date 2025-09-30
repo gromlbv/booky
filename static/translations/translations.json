@@ -92,11 +92,11 @@
     "today": "Сегодня",
     "available_booking": "Доступно для бронирования",
     "not_available": "Недоступно",
-    "meeting_cancelled": "Отменен, перенаправляем...",
+    "meeting_canceled": "Встреча отменена",
     "mail_resent": "Письмо отправлено повторно",
     "reminder_sent": "Напоминание отправлено",
-    "meeting_not_found": "Запрос на встречу не найден",
-    "too_much_requests": "СЛИШКОМ МНОГО ЗАПРОСОВ!",
+    "too_much_requests": "Слишком много запросов",
+    "every_60_seconds": "Каждые 60 секунд",
     "something_wrong": "Что-то пошло не так",
     "support_link": "Поддержка",
     
@@ -107,7 +107,14 @@
     "service_custom_booking": "Календарь Бронирования",
     "service_video_calling": "Кастомная видеосвязь",
     "service_custom_services": "Кастомные сервисы",
-    "downloads_ics_file": "Скачивает .ics файл"
+    "downloads_ics_file": "Скачивает .ics файл",
+
+    "page_not_found": "Страница не найдена",
+    "the_meeting_you_are_looking_for_does_not_exist": "Встреча, которую вы ищите, не существует",
+    "meeting_not_found": "Встреча не найдена",
+    "you_can_book_new_meeting_or_leave_this_page": "Вы можете забронировать новую встречу, или оставить эту страницу",
+    "support_via_telegram": "Поддержка через Telegram",
+    "jump_into_booking": "Перейти к бронированию"
   },
   "en": {
     "page_title": "Book meeting with Seniwave",
@@ -202,11 +209,11 @@
     "today": "Today",
     "available_booking": "Available for booking",
     "not_available": "Not available",
-    "meeting_cancelled": "Cancelled, redirecting",
-    "mail_resent": "Mail resent",
+    "meeting_canceled": "Meeting canceled",
+    "mail_resent": "Mail resent <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M13.5 4.5L6 12L2.5 8.5\" stroke=\"#2D3738\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>",
     "reminder_sent": "Reminder sent",
-    "meeting_not_found": "Meeting request not found",
-    "too_much_requests": "TOO MUCH REQUESTS!",
+    "too_much_requests": "Too much requests",
+    "every_60_seconds": "Every 60 seconds",
     "something_wrong": "Something went wrong",
     "support_link": "Support",
     
@@ -217,6 +224,13 @@
     "service_custom_booking": "Meet, Consultation Booking",
     "service_video_calling": "Video calling app",
     "service_custom_services": "Custom service",
-    "downloads_ics_file": "Downloads .ics file"
+    "downloads_ics_file": "Downloads .ics file",
+
+    "page_not_found": "Page not found",
+    "the_meeting_you_are_looking_for_does_not_exist": "The meeting you are looking for does not exist",
+    "meeting_not_found": "Meeting not found",
+    "you_can_book_new_meeting_or_leave_this_page": "You can book new meeting, or leave this page",
+    "support_via_telegram": "Support via Telegram",
+    "jump_into_booking": "Jump into booking"
   }
 }

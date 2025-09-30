@@ -78,7 +78,7 @@ class ReturnTemplate:
 R = ReturnTemplate()
 
 
-def rate_limit(timeout=1, max_attempts=5, reply=''):
+def rate_limit(timeout=1, max_attempts=5, reply='', reply_func=None):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -90,6 +90,17 @@ def rate_limit(timeout=1, max_attempts=5, reply=''):
                 })
 
             counter_key = f"rl_counter:{user_ip}"
+            block_key = f"rl_block:{user_ip}"
+
+            if r.exists(block_key):
+                if reply_func:
+                    return reply_func()
+                elif reply:
+                    return reply
+                return json_response({
+                    'type': 'warning',
+                    'message': t('too_much_requests')
+                })
 
             attempts = r.incr(counter_key)
             attempts_int = int(str(attempts))
@@ -97,14 +108,15 @@ def rate_limit(timeout=1, max_attempts=5, reply=''):
             if attempts == 1:
                 r.expire(counter_key, timeout)
             if attempts_int > max_attempts:
-                if reply:
+                r.setex(block_key, timeout, "blocked")
+                if reply_func:
+                    return reply_func()
+                elif reply:
                     return reply
                 return json_response({
                     'type': 'warning',
                     'message': t('too_much_requests')
                 })
-
-            r.setex(user_ip, timeout, "blocked")
             return f(*args, **kwargs)
         return wrapper
     return decorator
@@ -277,8 +289,8 @@ from models import DayOfWeek, TimeSpan
 from datetime import datetime
 import calendar
 
-@rate_limit(timeout=5, max_attempts=1)
 @app.route("/api/cancel/<id>")
+@rate_limit(timeout=5, max_attempts=1, reply_func=lambda: t('too_much_requests'))
 def cancel_meeting(id):
     m = db.get_meeting_request(id)
     if not m:
@@ -295,14 +307,14 @@ def cancel_meeting(id):
         code=m.meet_code,
         meeting_id=m.id
     )
-    mail_user.send_cancel()
-    m.cancel()
-    session.pop('meeting_request_id', None)
+    #mail_user.send_cancel()
+    #m.cancel()
+    #session.pop('meeting_request_id', None)
 
-    return t('meeting_cancelled')
+    return t('meeting_canceled')
 
-@rate_limit(timeout=60, max_attempts=1, reply='Next one in 60 seconds')
 @app.route("/api/resend/<id>")
+@rate_limit(timeout=60, max_attempts=1, reply_func=lambda: t('every_60_seconds'))
 def resend_code(id):
     m = db.get_meeting_request(id)
     if not m:
@@ -323,7 +335,7 @@ def resend_code(id):
         code=m.meet_code,
         meeting_id=m.id
     )
-    mail_user.send_code()
+    #mail_user.send_code()
 
     return t('mail_resent')
 
@@ -638,9 +650,14 @@ def api_countdown(meet_id):
     r.setex(cache_key, 1, result)
     return result
 
+@app.errorhandler(400)
 @app.errorhandler(404)
 def page_not_found(e):
     return R.page_not_found()
+
+@app.route('/meet/canceled')
+def meeting_cancelled():
+    return R.meeting_canceled()
 
 if __name__ == "__main__":
     app.run(debug=True, port=5300, host='0.0.0.0', threaded=True)

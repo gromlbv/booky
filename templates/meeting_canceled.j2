@@ -3,8 +3,13 @@
 
 {% block title %}Meeting canceled{% endblock title %}
 {% block content %}
-{{ status_block("Meeting canceled", description="You can book new meeting, or leave this page", image="/static/images/404-banner.png", buttons=[
-    {"text": "Jump into booking", "link": "/", "class": "primary"}
-]) }}
+{{ status_block(
+    "meeting_canceled",
+    description="you_can_book_new_meeting_or_leave_this_page",
+    image="/static/images/meeting-canceled.png  ",
+    buttons=[
+        {"data_localize": "jump_into_booking", "link": "/", "class": "primary"}
+    ])
+}}
 
 {% endblock content %}

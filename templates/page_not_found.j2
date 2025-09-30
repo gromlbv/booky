@@ -4,8 +4,12 @@
 {% block title %}Page Not Found{% endblock title %}
 {% block content %}
 
-{{ status_block("Page not found", "/static/images/404-banner.png", [
-    {"text": "Jump into booking", "link": "/", "class": "primary"}
-]) }}
+{{ status_block(
+    "page_not_found",
+    image="/static/images/404-banner.png",
+    buttons=[
+        {"data_localize": "jump_into_booking", "link": "/", "class": "primary"}
+    ])
+}}
 
 {% endblock content %}

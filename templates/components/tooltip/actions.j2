@@ -1,22 +1,79 @@
 {% macro tooltip_actions(actions=[]) %}
 {% from 'components/icons.j2' import icon %}
-<button class="action-button default ignore-defaults gap-12" data-action="actions" data-localize="options">
-Options {{ icon("options", "secondary-fill") }}
-<div class="action-content">
-    {% for action in actions %}
-        {{ tooltip_action(action) }}
-    {% endfor %}
+{% from 'components/tooltip/actions.j2' import action_script %}
+<div style="position: relative;">
+    <button class="action-button default gap-12" data-action="actions" data-localize="options">
+    Options {{ icon("options", "secondary-fill") }}
+    </button>
+    <div class="action-content">
+        {% for action in actions %}
+            {{ tooltip_action(action) }}
+        {% endfor %}
+    </div>
 </div>
-</button>
+{{ action_script() }}
 
+{% endmacro %}
+
+
+
+{% macro tooltip_action(action) %}
+{% from 'components/icons.j2' import icon %}
+
+{% if action.type == "separator" %}
+    <hr class="action-separator">
+{% elif action.type == "button" %}
+    <a class="action {{ action.class }} ignore-defaults" id="{{ action.id }}" type="button" {% if action.copy_link %}data-copy-link="{{ action.copy_link }}"{% endif %}>
+        <span class="flex-cl action-text">
+        {% if action.name_key %}
+            <span data-localize="{{ action.name_key }}">{{ action.name }}</span>
+        {% else %}
+            {{ action.name }}
+        {% endif %}
+        {% if action.desc %}
+            {% if action.desc_key %}
+            <p class="action-desc" data-localize="{{ action.desc_key }}">{{ action.desc }}</p>
+            {% else %}
+            <p class="action-desc">{{ action.desc }}</p>
+            {% endif %}
+        {% endif %}
+        </span>
+        {% if action.icon %}
+            {{ icon(action.icon, "secondary-color") }}
+        {% endif %}
+    </a>
+{% else %}
+        <a class="action {{ action.class }} ignore-defaults" id="{{ action.id }}" type="button"
+        hx-swap="innerHTML" hx-get="{{ action.hx_get }}">
+        <span class="flex-cl action-text">
+        {% if action.name_key %}
+            <span data-localize="{{ action.name_key }}">{{ action.name }}</span>
+        {% else %}
+            {{ action.name }}
+        {% endif %}
+        {% if action.desc %}
+            {% if action.desc_key %}
+            <p class="action-desc" data-localize="{{ action.desc_key }}">{{ action.desc }}</p>
+            {% else %}
+            <p class="action-desc">{{ action.desc }}</p>
+            {% endif %}
+        {% endif %}
+        </span>
+        {% if action.icon %}
+            {{ icon(action.icon, "secondary-color") }}
+        {% endif %}
+        </a>
+{% endif %}
+{% endmacro %}
+
+
+
+{% macro action_script() %}
 <script>
     $(document).ready(function() {
         $('.action-button').click(function(e) {
             e.stopPropagation();
-            if ($(e.target).closest('.action-content').length) {
-                return;
-            }
-            $('.action-content').toggleClass('open');
+            $(this).siblings('.action-content').toggleClass('open');
         });
     });
     // if cursor is off the action-button
@@ -35,41 +92,63 @@ Options {{ icon("options", "secondary-fill") }}
         clearTimeout(closeTimer);
         $('.action-content').stop(true, true).animate({ opacity: 1 }, 200);
     });
+    $(document).on('mouseenter', '.action-content', function() {
+        clearTimeout(fadeTimer);
+        clearTimeout(closeTimer);
+        $('.action-content').stop(true, true).animate({ opacity: 1 }, 200);
+    });
+    $(document).on('mouseleave', '.action-content', function() {
+        fadeTimer = setTimeout(function() {
+            $('.action-content').stop(true, true).animate({ opacity: 0 }, 800);
+        }, 600);
+        closeTimer = setTimeout(function() {
+            $('.action-content').removeClass('open');
+        }, 1400);
+    });
     // click outside the action-content
     $(document).on('click', function(e) {
-        if (!$(e.target).closest('.action-button').length) {
+        if (!$(e.target).closest('.action-button').length && !$(e.target).closest('.action-content').length) {
             $('.action-content').removeClass('open');
         }
     });
+    
+    $(document).ready(function() {
+        $(document).on('click', '.copy-button', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            
+            const copyLink = $(this).data('copy-link');
+            if (copyLink) {
+                const tempInput = document.createElement('input');
+                tempInput.value = copyLink;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                tempInput.setSelectionRange(0, 99999);
+                
+                try {
+                    document.execCommand('copy');
+                    
+                    const button = $(this);
+                    const iconElement = button.find('svg');
+                    const originalIcon = iconElement.clone();
+                    
+                    const successIcon = '<svg class="secondary-color" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.5 4.5L6 12L2.5 8.5" stroke="var(--secondary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                    iconElement.replaceWith(successIcon);
+                    button.addClass('copied');
+                    
+                    setTimeout(function() {
+                        button.find('svg').replaceWith(originalIcon);
+                        button.removeClass('copied');
+                    }, 1200);
+                    
+                } catch (err) {
+                    // nothing
+                }
+                
+                document.body.removeChild(tempInput);
+            }
+        });
+    });
 </script>
-{% endmacro %}
-
-{% macro tooltip_action(action) %}
-{% from 'components/icons.j2' import icon %}
-
-{% if action.type == "separator" %}
-    <hr class="action-separator">
-{% else %}
-    <a class="action {{ action.class }} ignore-defaults" id="{{ action.id }}" type="button"
-    hx-swap="innerHTML" hx-get="{{ action.hx_get }}">
-    <span class="flex-cl action-text">
-    {% if action.name_key %}
-        <span data-localize="{{ action.name_key }}">{{ action.name }}</span>
-    {% else %}
-        {{ action.name }}
-    {% endif %}
-    {% if action.desc %}
-        {% if action.desc_key %}
-        <p class="action-desc" data-localize="{{ action.desc_key }}">{{ action.desc }}</p>
-        {% else %}
-        <p class="action-desc">{{ action.desc }}</p>
-        {% endif %}
-    {% endif %}
-    </span>
-    {% if action.icon %}
-        {{ icon(action.icon, "secondary-color") }}
-    {% endif %}
-    </a>
-{% endif %}
-
 {% endmacro %}
