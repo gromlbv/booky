@@ -307,9 +307,9 @@ def cancel_meeting(id):
         code=m.meet_code,
         meeting_id=m.id
     )
-    #mail_user.send_cancel()
-    #m.cancel()
-    #session.pop('meeting_request_id', None)
+    mail_user.send_cancel()
+    m.cancel()
+    session.pop('meeting_request_id', None)
 
     return t('meeting_canceled')
 
@@ -335,7 +335,7 @@ def resend_code(id):
         code=m.meet_code,
         meeting_id=m.id
     )
-    #mail_user.send_code()
+    mail_user.send_code()
 
     return t('mail_resent')
 
