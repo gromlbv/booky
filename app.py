@@ -136,12 +136,21 @@ def is_loggined():
 
 @app.route('/')
 def index():
+    set_referrer()
     if 'meeting_request_id' in session:
         return redirect(url_for('confirmed', id=session['meeting_request_id']))
 
     user_timezone = get_user_timezone()
     now = datetime.now()
-    return R.index(year=now.year, month=now.month, user_timezone=user_timezone)
+    
+    # if last month day > show next month
+    tomorrow = now + timedelta(days=1)
+    if tomorrow.month != now.month:
+        display_date = tomorrow
+    else:
+        display_date = now
+    
+    return R.index(year=display_date.year, month=display_date.month, user_timezone=user_timezone)
 
 @app.route('/debug')
 def debug():
@@ -201,6 +210,26 @@ def set_language():
         return 'OK'
     return 'Invalid language', 400
 
+
+@app.post('/set-referrer?referrer=<args:args>')
+def set_referrer(args=None):
+    if args:
+        session['referrer'] = args
+        return 'OK'
+    
+    referrer = request.referrer
+    domains = [
+        'seniwave.com',
+        'seniwave.ru',
+        'seniwave.ae',
+        'exposhow.ru',
+    ]
+
+    if referrer not in domains:
+        return 'OK'
+    
+    session['referrer'] = referrer
+    return 'OK'
     
 @app.post('/submit')
 def submit_post():

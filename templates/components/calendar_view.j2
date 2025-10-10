@@ -1,4 +1,4 @@
-{% macro calendar_view(year=2025, month=9) %}
+{% macro calendar_view(year, month) %}
 {% set month_names = {
     1: 'January', 2: 'February', 3: 'March', 4: 'April', 
     5: 'May', 6: 'June', 7: 'July', 8: 'August', 
@@ -19,7 +19,6 @@
             data-year="{{ prev_year }}" 
             data-month="{{ prev_month }}"
             data-localize-attr="data-description:previous_month"
-            data-description="Previous month"
             hx-get="/calendar/{{ prev_year }}/{{ prev_month }}"
             hx-target=".right-side.calendar"
             hx-swap="innerHTML">
@@ -28,7 +27,6 @@
         <button 
             id="calendar-arrow-right"
             data-localize-attr="data-description:next_month"
-            data-description="Next month"
             data-year="{{ next_year }}" 
             data-month="{{ next_month }}"
             hx-get="/calendar/{{ next_year }}/{{ next_month }}"

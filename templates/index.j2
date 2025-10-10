@@ -53,7 +53,7 @@
     <div class="global">
         <div class="wrapper">
             {% block content %}
-            {{ date_block() }}
+            {{ date_block(year, month) }}
             {{ time_block() }}
             <form class="confirmation hidden" method="POST" action="/submit">
                 <input type="hidden" id="hidden-date" name="date" value="">

@@ -140,3 +140,4 @@ def format_date_localized(date, lang='en', format_type='short'):
 # 2025-09-29
 def format_date_for_api(date):
     date = datetime.strptime(date, '%Y-%m-%d')
+    return date
