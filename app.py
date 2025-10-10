@@ -136,7 +136,7 @@ def is_loggined():
 
 @app.route('/')
 def index():
-    set_referrer()
+    get_referrer()
     if 'meeting_request_id' in session:
         return redirect(url_for('confirmed', id=session['meeting_request_id']))
 
@@ -210,26 +210,34 @@ def set_language():
         return 'OK'
     return 'Invalid language', 400
 
+@app.get('/go-back')
+def go_back():
+    if referrer := session.get('referrer'):
+        return redirect(referrer)
+    if session.get('language') == 'ru':
+        return redirect('https://seniwave.ru')
+    return redirect('https://seniwave.com')
 
-@app.post('/set-referrer?referrer=<args:args>')
-def set_referrer(args=None):
-    if args:
-        session['referrer'] = args
-        return 'OK'
-    
+def get_referrer():
     referrer = request.referrer
-    domains = [
+    print(referrer, session.get('referrer', None))
+    if not referrer:
+        return
+    
+    referrer_domain = referrer.split('/')[2]
+    clean_referrer = referrer.split(referrer_domain)[0] + referrer_domain
+
+    allowed_domains = [
         'seniwave.com',
         'seniwave.ru',
         'seniwave.ae',
         'exposhow.ru',
     ]
 
-    if referrer not in domains:
-        return 'OK'
-    
-    session['referrer'] = referrer
-    return 'OK'
+    for domain in allowed_domains:
+        if domain in clean_referrer:
+            session['referrer'] = clean_referrer
+            break
     
 @app.post('/submit')
 def submit_post():
@@ -297,7 +305,7 @@ def confirmed(id):
         if session_meeting_request_id == id:
             session.pop('meeting_request_id', None)
             return redirect(url_for('index'))
-        return R.meeting_not_found()
+        return redirect(url_for('meeting_not_found'))
 
     date = m.calendar_day.date
     start_time = m.time_span.start
@@ -323,7 +331,7 @@ import calendar
 def cancel_meeting(id):
     m = db.get_meeting_request(id)
     if not m:
-        return t('meeting_not_found'), 400
+        return redirect(url_for('meeting_not_found'))
 
     mail_user = MailUser(
         email=m.email,
@@ -347,7 +355,7 @@ def cancel_meeting(id):
 def resend_code(id):
     m = db.get_meeting_request(id)
     if not m:
-        return t('meeting_not_found'), 400    
+        return redirect(url_for('meeting_not_found'))
 
     date = format_date(m.calendar_day.date)
     start_time = format_time(m.time_span.start)
@@ -373,7 +381,7 @@ def resend_code(id):
 def reminder(id):
     m = db.get_meeting_request(id)
     if not m:
-        return t('meeting_not_found'), 400
+        return redirect(url_for('meeting_not_found'))
 
     date = format_date(m.calendar_day.date)
     start_time = format_time(m.time_span.start)
@@ -511,6 +519,8 @@ def get_calendar(year, month):
                 day_of_week = DayOfWeek.query.filter_by(id=dow + 1).first()
                 is_available = day_of_week and day_of_week.is_working
                 is_today = is_current_month and today.day == day
+                is_past = date_obj.date() < today.date() and is_available
+
                 if date_obj.date() < today.date():
                     is_available = False
                 if is_today:
@@ -529,8 +539,10 @@ def get_calendar(year, month):
                     description = t("today")
                 elif is_available:
                     description = t("available_booking")
+                elif is_past:
+                    description = t("past_day")
                 else:
-                    description = t("not_available")
+                    description = t("is_day_off")
                 
                 html += f'''<button 
                     class="{class_str}" 
@@ -560,7 +572,7 @@ def get_date_availabiltiy(date_str):
 def get_event(id):
     m = db.get_meeting_request(id)
     if not m:
-        return 'Meeting request not found', 400
+        return redirect(url_for('meeting_not_found'))
     
     file_path = f'ics_service/events/{id}.ics'
     if not os.path.exists(file_path):
@@ -679,14 +691,21 @@ def api_countdown(meet_id):
     r.setex(cache_key, 1, result)
     return result
 
+
+# service pages
+
 @app.errorhandler(400)
 @app.errorhandler(404)
 def page_not_found(e):
-    return R.page_not_found()
+    return render_template('service/page_not_found.j2')
 
 @app.route('/meet/canceled')
 def meeting_cancelled():
-    return R.meeting_canceled()
+    return render_template('service/meeting_canceled.j2')
+
+@app.route('/meet/not-found')
+def meeting_not_found():
+    return render_template('service/meeting_not_found.j2')
 
 if __name__ == "__main__":
     app.run(debug=True, port=5300, host='0.0.0.0', threaded=True)

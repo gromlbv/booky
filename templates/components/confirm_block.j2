@@ -16,7 +16,7 @@
         </div>
         <div class="right-side flex-cl justify-between align-end">
             <h1 id="confirm-time">{{ time or "??:??<br>??:??" }}</h1>
-            <p>{{ user_timezone or "GMT+00:00"}}</p>
+            <p>GMT{{ session.get('timezone', '+00:00') }}</p>
         </div>
     </div>
     <button class="default full" id="return-to-edit" type="button" data-localize="return_to_edit">

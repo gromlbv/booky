@@ -24,7 +24,7 @@ $(document).ready(function() {
                     setReturnToEdit();
                 });
         } else {
-            backButton.attr('href', 'https://seniwave.com')
+            backButton.attr('href', '/go-back')
                 .data('description', 'Back to SeniWave')
         }
     }

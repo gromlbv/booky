@@ -9,7 +9,7 @@ $(document).ready(function() {
         clearTimeout(tooltipTimeout);
         tooltipTimeout = setTimeout(function() {
             showTooltip($element, description);
-        }, 800);
+        }, 400);
     });
     
     $(document).on('mouseleave', '[data-description]', function() {
@@ -26,7 +26,8 @@ $(document).ready(function() {
             position: 'fixed',
             left: elementRect.left + (elementRect.width / 2) - ($tooltip.outerWidth() / 2),
             top: elementRect.bottom + 4,
-            opacity: 1
+            opacity: 1,
+            transform: 'scale(1)'
         });
                 
         currentTooltip = $tooltip;
